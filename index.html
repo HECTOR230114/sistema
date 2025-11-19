@@ -3,225 +3,107 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NEXUS Pro - ITIL v4 + PMBOK 7</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Sistema Integral de Gestión IA - ITIL & PMBOK v3.0 FINAL</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
-<body>
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="logo-section">
-      <div class="logo">
-        <div class="logo-icon"><i class="fas fa-project-diagram"></i></div>
-        <div class="logo-text">
-          <h1>NEXUS Pro</h1>
-          <p>ITIL v4 + PMBOK 7</p>
-        </div>
-      </div>
-    </div>
-
-    <nav class="nav-menu">
-      <div class="nav-section">
-        <div class="nav-section-title"><i class="fas fa-cogs"></i> ITIL Service Management</div>
-        <a href="#" class="nav-item active" data-view="dashboard"><i class="fas fa-chart-line"></i><span>Dashboard Ejecutivo</span></a>
-        <a href="#" class="nav-item" data-view="incidents"><i class="fas fa-exclamation-circle"></i><span>Incident Management</span><span class="nav-badge" id="incidents-badge">0</span></a>
-        <a href="#" class="nav-item" data-view="problems"><i class="fas fa-bug"></i><span>Problem Management</span><span class="nav-badge" id="problems-badge">0</span></a>
-        <a href="#" class="nav-item" data-view="changes"><i class="fas fa-sync-alt"></i><span>Change Management</span></a>
-        <a href="#" class="nav-item" data-view="releases"><i class="fas fa-rocket"></i><span>Release Management</span></a>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-section-title"><i class="fas fa-tasks"></i> PMBOK Project Areas</div>
-        <a href="#" class="nav-item" data-view="scope"><i class="fas fa-sitemap"></i><span>Alcance del Proyecto</span></a>
-        <a href="#" class="nav-item" data-view="schedule"><i class="fas fa-calendar-alt"></i><span>Cronograma</span></a>
-        <a href="#" class="nav-item" data-view="costs"><i class="fas fa-dollar-sign"></i><span>Gestión de Costos</span></a>
-        <a href="#" class="nav-item" data-view="quality"><i class="fas fa-medal"></i><span>Control de Calidad</span></a>
-        <a href="#" class="nav-item" data-view="risks"><i class="fas fa-shield-alt"></i><span>Gestión de Riesgos</span></a>
-        <a href="#" class="nav-item" data-view="stakeholders"><i class="fas fa-users"></i><span>Stakeholders</span></a>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-section-title"><i class="fas fa-link"></i> Integración</div>
-        <a href="#" class="nav-item" data-view="integration"><i class="fas fa-puzzle-piece"></i><span>ITIL+PMBOK Matrix</span></a>
-        <a href="#" class="nav-item" data-view="kpis"><i class="fas fa-tachometer-alt"></i><span>KPIs & Métricas</span></a>
-        <a href="#" class="nav-item" data-view="reports"><i class="fas fa-file-alt"></i><span>Reportes Ejecutivos</span></a>
-      </div>
-    </nav>
-
-    <div class="maturity-indicator">
-      <div class="maturity-header"><i class="fas fa-award"></i><span>Madurez ITIL</span></div>
-      <div class="maturity-level">
-        <div class="maturity-bar"><div class="maturity-fill" style="width: 78%"></div></div>
-        <span class="maturity-text">Nivel 4 - Gestionado</span>
-      </div>
-    </div>
-  </aside>
-
-  <!-- MAIN CONTENT -->
-  <div class="main-content">
-    <header class="top-bar">
-      <div class="breadcrumb">
-        <i class="fas fa-home"></i><span class="breadcrumb-separator">/</span><span id="page-title">Dashboard Ejecutivo</span>
-      </div>
-      <div class="top-actions">
-        <div class="search-box">
-          <i class="fas fa-search"></i>
-          <input type="text" placeholder="Buscar incidencias, proyectos..." />
-        </div>
-        <div class="service-level">
-          <i class="fas fa-server"></i>
-          <div class="service-info">
-            <span class="service-label">Service Level</span>
-            <span class="service-value">99.7%</span>
-          </div>
-        </div>
-        <div class="notification-btn" id="notification-btn">
-          <i class="fas fa-bell"></i>
-          <div class="notification-dot" id="notification-dot" style="display:none"></div>
-        </div>
-        <div class="user-profile">
-          <div class="user-avatar">PM</div>
-          <div class="user-info">
-            <div class="user-name">Project Manager</div>
-            <div class="user-role">ITIL Expert / PMP</div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <div class="content-area">
-      <!-- DASHBOARD -->
-      <section id="dashboard" class="view-section active">
-        <div class="stats-grid">
-          <div class="stat-card itil-card">
-            <div class="stat-header"><div class="stat-title"><i class="fas fa-ticket-alt"></i> Incidencias Activas</div><div class="stat-badge itil-badge">ITIL v4</div></div>
-            <div class="stat-value" id="stat-incidents">0</div>
-            <div class="stat-footer"><span class="stat-label">Críticas:</span><span class="stat-critical" id="stat-critical">0</span></div>
-          </div>
-          <div class="stat-card itil-card">
-            <div class="stat-header"><div class="stat-title"><i class="fas fa-clock"></i> MTTR Promedio</div><div class="stat-badge itil-badge">ITIL v4</div></div>
-            <div class="stat-value" id="stat-mttr">0h</div>
-            <div class="stat-change positive"><i class="fas fa-arrow-down"></i> -15% mejora</div>
-          </div>
-          <div class="stat-card pmbok-card">
-            <div class="stat-header"><div class="stat-title"><i class="fas fa-project-diagram"></i> CPI</div><div class="stat-badge pmbok-badge">PMBOK 7</div></div>
-            <div class="stat-value">1.08</div>
-            <div class="stat-change positive"><i class="fas fa-check"></i> Por encima del plan</div>
-          </div>
-          <div class="stat-card pmbok-card">
-            <div class="stat-header"><div class="stat-title"><i class="fas fa-calendar-check"></i> SPI</div><div class="stat-badge pmbok-badge">PMBOK 7</div></div>
-            <div class="stat-value">0.96</div>
-            <div class="stat-change negative"><i class="fas fa-exclamation"></i> Leve retraso</div>
-          </div>
-        </div>
-
-        <div class="value-chain">
-          <div class="chain-item"><i class="fas fa-clipboard-list"></i><h4>Plan</h4><span class="chain-status active">Activo</span></div>
-          <div class="chain-arrow"><i class="fas fa-arrow-right"></i></div>
-          <div class="chain-item"><i class="fas fa-pencil-ruler"></i><h4>Design & Transition</h4><span class="chain-status active">Activo</span></div>
-          <div class="chain-arrow"><i class="fas fa-arrow-right"></i></div>
-          <div class="chain-item"><i class="fas fa-shopping-cart"></i><h4>Obtain/Build</h4><span class="chain-status">En espera</span></div>
-          <div class="chain-arrow"><i class="fas fa-arrow-right"></i></div>
-          <div class="chain-item"><i class="fas fa-truck"></i><h4>Deliver & Support</h4><span class="chain-status active">Activo</span></div>
-          <div class="chain-arrow"><i class="fas fa-arrow-right"></i></div>
-          <div class="chain-item"><i class="fas fa-chart-line"></i><h4>Improve</h4><span class="chain-status active">Activo</span></div>
-        </div>
-
-        <div class="charts-grid">
-          <div class="chart-card">
-            <div class="chart-header"><div class="chart-title"><i class="fas fa-exclamation-triangle"></i> Incidencias por Prioridad</div></div>
-            <div class="chart-container"><canvas id="chart-incidents-priority"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-header"><div class="chart-title"><i class="fas fa-chart-gantt"></i> Avance del Proyecto</div></div>
-            <div class="chart-container"><canvas id="chart-project-progress"></canvas></div>
-          </div>
-        </div>
-
-        <div class="chart-card">
-          <div class="chart-header"><div class="chart-title"><i class="fas fa-broadcast-tower"></i> Actividad en Tiempo Real</div></div>
-          <div class="live-feed" id="live-feed"></div>
-        </div>
-      </section>
-
-      <!-- INCIDENTS -->
-      <section id="incidents" class="view-section">
-        <div class="section-header"><h2><i class="fas fa-exclamation-circle"></i> Incident Management</h2></div>
-        <div class="data-table">
-          <div class="table-header">
-            <div class="table-title">Registro de Incidencias</div>
-            <button class="filter-btn btn-new" id="btn-new-incident"><i class="fas fa-plus"></i> Nueva Incidencia</button>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th><th>Fecha/Hora</th><th>Título</th><th>Categoría</th><th>Impacto</th><th>Urgencia</th><th>Prioridad</th><th>Estado</th><th>SLA</th><th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="incidents-tbody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- OTRAS SECCIONES (problems, changes, releases, scope, etc.) están incluidas en el código completo que ya tenías -->
-
-      <!-- MODAL NUEVA INCIDENCIA -->
-      <div class="modal" id="modal-new-incident">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2>Nueva Incidencia</h2>
-            <span class="modal-close">×</span>
-          </div>
-          <div class="modal-body">
-            <form id="form-new-incident">
-              <div class="form-group"><label>Título</label><input type="text" id="incident-title" required></div>
-              <div class="form-row">
-                <div class="form-group"><label>Categoría</label><select id="incident-category">
-                  <option>Hardware</option><option>Software</option><option>Network</option><option>Database</option>
-                </select></div>
-                <div class="form-group"><label>Impacto</label><select id="incident-impact">
-                  <option>Alto</option><option>Medio</option><option>Bajo</option>
-                </select></div>
-              </div>
-              <div class="form-row">
-                <div class="form-group"><label>Urgencia</label><select id="incident-urgency">
-                  <option>Alta</option><option>Media</option><option>Baja</option>
-                </select></div>
-              </div>
-              <div class="form-group"><label>Descripción</label><textarea id="incident-description"></textarea></div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary modal-close">Cancelar</button>
-            <button class="btn btn-primary" id="btn-submit-incident">Registrar</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- MODAL DETALLE INCIDENCIA -->
-      <div class="modal" id="modal-incident">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2>Detalle de Incidencia</h2>
-            <span class="modal-close">×</span>
-          </div>
-          <div class="modal-body" id="modal-incident-body"></div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary modal-close">Cerrar</button>
-          </div>
-        </div>
-      </div>
-
-      <audio id="alert-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-tone-1054.mp3" preload="auto"></audio>
+<body class="claro">
+  <!-- Barra de título Windows-like -->
+  <div class="title-bar" id="titleBar">
+    <div class="title-bar-text"><i class="fas fa-brain"></i> Sistema Integral de Gestión de Proyectos IA - ITIL & PMBOK v3.0</div>
+    <div class="title-bar-controls">
+      <button onclick="toggleTema()" title="Tema claro/oscuro"><i class="fas fa-moon"></i></button>
+      <button onclick="iniciarModoPresentacion()" title="Modo Presentación"><i class="fas fa-expand"></i></button>
+      <button class="minimize">_</button>
+      <button class="maximize">□</button>
+      <button class="close">×</button>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Menú principal completo -->
+  <div class="menu-bar">
+    <ul>
+      <li>Archivo ▾
+        <ul>
+          <li onclick="exportarReporte()">Generar Reporte Semanal</li>
+          <li onclick="abrirCalculadoras()">Calculadoras IA</li>
+          <li onclick="abrirPlantillas()">Biblioteca de Plantillas</li>
+          <li>─</li>
+          <li>Salir</li>
+        </ul>
+      </li>
+      <li>Proyecto ▾
+        <ul>
+          <li onclick="abrirDashboard()">Dashboard Ejecutivo</li>
+          <li onclick="abrirGantt()">Diagrama de Gantt</li>
+          <li onclick="abrirBurndown()">Burndown Chart</li>
+          <li onclick="abrirCurvaS()">Curva S (Valor Ganado)</li>
+          <li onclick="abrirTimelineUnificada()">Línea de Tiempo Unificada</li>
+        </ul>
+      </li>
+      <li>ITIL ▾
+        <ul>
+          <li onclick="abrirIncidentes()">Incidentes</li>
+          <li onclick="abrirCambios()">Gestión de Cambios</li>
+          <li onclick="abrirProblemas()">Gestión de Problemas</li>
+          <li onclick="abrirSLA()">Cumplimiento SLA</li>
+        </ul>
+      </li>
+      <li>Automatización ▾
+        <ul>
+          <li onclick="abrirCentroAutomatizacion()">Centro de Automatización IA</li>
+          <li onclick="abrirSimuladorEscenarios()">¿Qué pasa si...?</li>
+          <li onclick="iniciarDemo()">Demo Automática Completa</li>
+        </ul>
+      </li>
+      <li>Gráficos ▾
+        <ul><li onclick="abrirCentroGraficos()">Centro de Gráficos (30+ tipos)</li></ul>
+      </li>
+      <li>Herramientas ▾
+        <ul>
+          <li onclick="abrirBusquedaGlobal()">Búsqueda Global (Ctrl+K)</li>
+          <li onclick="abrirTutorial()">Tutorial Interactivo</li>
+          <li onclick="abrirGlosario()">Glosario Completo</li>
+        </ul>
+      </li>
+      <li>Ayuda ▾
+        <ul>
+          <li onclick="abrirAsistente()">Asistente Inteligente</li>
+          <li>Acerca de v3.0</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Sidebar mejorado -->
+  <div class="sidebar">
+    <h3><i class="fas fa-rocket"></i> Navegación</h3>
+    <button onclick="abrirDashboard()"><i class="fas fa-home"></i> Dashboard Ejecutivo</button>
+    <button onclick="abrirCentroGraficos()"><i class="fas fa-chart-pie"></i> 30+ Gráficos</button>
+    <button onclick="abrirCentroAutomatizacion()"><i class="fas fa-robot"></i> Automatización IA</button>
+    <button onclick="abrirIncidentes()"><i class="fas fa-exclamation-triangle"></i> Incidentes ITIL</button>
+    <button onclick="abrirAsistente()"><i class="fas fa-brain"></i> Asistente IA</button>
+    <button onclick="iniciarDemo()"><i class="fas fa-play-circle"></i> Demo Automática</button>
+    <button onclick="iniciarModoPresentacion()"><i class="fas fa-tv"></i> Modo Presentación</button>
+  </div>
+
+  <div id="workspace"></div>
+
+  <!-- Barra de estado avanzada -->
+  <div class="status-bar">
+    <span><i class="fas fa-project-diagram"></i> Proyectos: <strong id="proyectos-count">0</strong></span>
+    <span><i class="fas fa-bell"></i> Incidentes abiertos: <strong id="incidentes-abiertos">0</strong></span>
+    <span><i class="fas fa-clock"></i> <span id="reloj"></span></span>
+    <span id="notif-status"><i class="fas fa-check-circle"></i> Sistema v3.0 - 100% Funcional</span>
+  </div>
+
+  <div id="toast-container"></div>
+  <div id="presentacion-overlay" style="display:none;"></div>
+
   <script src="script.js"></script>
 </body>
 </html>
-       
-              
-          
-      
