@@ -3,249 +3,541 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Proyectos IA - ITIL & PMBOK</title>
+    <title>Caso Práctico: Sistema de Detección de Fraudes con IA - ITIL 4 + PMBOK 7</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <h1 class="header-title">
-                <svg class="icon-large" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-                Sistema de Gestión de Proyectos IA
-            </h1>
-            <p class="header-subtitle">Integración ITIL & PMBOK - Caso: Implementación IA en Telecomunicaciones</p>
+            <div class="header-left">
+                <i class="fas fa-shield-alt"></i>
+                <h1>Sistema de Detección de Fraudes con IA</h1>
+            </div>
+            <div class="header-right">
+                <span class="project-day">Día del proyecto: <strong id="projectDay">1</strong></span>
+                <span class="current-datetime" id="currentDateTime"></span>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Navegación -->
-    <nav class="navigation">
-        <button class="nav-button active" data-tab="dashboard">Dashboard</button>
-        <button class="nav-button" data-tab="proyectos">Proyectos</button>
-        <button class="nav-button" data-tab="incidentes">Incidentes</button>
-        <button class="nav-button" data-tab="riesgos">Riesgos</button>
-        <button class="nav-button" data-tab="cambios">Cambios</button>
+    <!-- Simulation Control -->
+    <div class="simulation-control">
+        <button class="btn-simulation" id="simulationToggle">
+            <i class="fas fa-pause"></i>
+            <span>Pausar Simulación</span>
+        </button>
+        <div class="simulation-status">
+            <span class="status-indicator active"></span>
+            <span>Simulación activa - Nuevo registro cada 5 segundos</span>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="main-nav">
+        <button class="nav-tab active" data-tab="inicio">
+            <i class="fas fa-home"></i> Inicio
+        </button>
+        <button class="nav-tab" data-tab="itil">
+            <i class="fas fa-cogs"></i> Gestión ITIL
+        </button>
+        <button class="nav-tab" data-tab="pmbok">
+            <i class="fas fa-tasks"></i> Gestión PMBOK
+        </button>
+        <button class="nav-tab" data-tab="dashboard">
+            <i class="fas fa-chart-line"></i> Dashboard
+        </button>
+        <button class="nav-tab" data-tab="conocimiento">
+            <i class="fas fa-book"></i> Base de Conocimientos
+        </button>
+        <button class="nav-tab" data-tab="reportes">
+            <i class="fas fa-file-download"></i> Reportes
+        </button>
     </nav>
 
-    <!-- Contenido Principal -->
-    <main class="container">
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Inicio Tab -->
+        <section class="tab-content active" id="inicio">
+            <div class="welcome-section">
+                <h2><i class="fas fa-brain"></i> Proyecto de Implementación de Sistema de Detección de Fraudes con IA</h2>
+                <div class="project-info">
+                    <div class="info-card">
+                        <h3>Contexto del Proyecto</h3>
+                        <p>Banco Nacional S.A. ha iniciado un proyecto estratégico para implementar un sistema de detección de fraudes utilizando Machine Learning e Inteligencia Artificial. El objetivo es reducir las pérdidas por transacciones fraudulentas en un 85% durante el primer año de operación.</p>
+                        <p>Este proyecto integra las mejores prácticas de <strong>ITIL 4</strong> para la gestión de servicios TI y el marco <strong>PMBOK 7ma edición</strong> para la dirección de proyectos, asegurando una implementación exitosa y sostenible.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3>Alcance y Objetivos</h3>
+                        <ul>
+                            <li><strong>Desarrollar modelo de ML:</strong> Random Forest y Redes Neuronales para detección en tiempo real</li>
+                            <li><strong>Integración:</strong> Sistema core bancario, canales digitales y ATMs</li>
+                            <li><strong>Infraestructura:</strong> Cloud híbrida con alta disponibilidad (99.95%)</li>
+                            <li><strong>Cumplimiento:</strong> ISO 27001, PCI DSS, normativas bancarias locales</li>
+                            <li><strong>Equipo:</strong> 15 profesionales (Data Scientists, DevOps, Analistas, QA)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Integración ITIL 4 + PMBOK 7</h3>
+                        <div class="integration-grid">
+                            <div class="integration-item">
+                                <i class="fas fa-ticket-alt"></i>
+                                <h4>Gestión de Incidentes</h4>
+                                <p>Monitoreo 24/7 de alertas del modelo, falsos positivos, caídas del servicio</p>
+                            </div>
+                            <div class="integration-item">
+                                <i class="fas fa-tools"></i>
+                                <h4>Gestión de Problemas</h4>
+                                <p>Análisis de causa raíz de degradación del modelo, sesgo algorítmico</p>
+                            </div>
+                            <div class="integration-item">
+                                <i class="fas fa-exchange-alt"></i>
+                                <h4>Gestión de Cambios</h4>
+                                <p>CAB para actualizaciones del modelo, nuevas features, patches</p>
+                            </div>
+                            <div class="integration-item">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h4>Gestión de Riesgos</h4>
+                                <p>Identificación y mitigación de riesgos técnicos, regulatorios, operacionales</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-progress">
+                    <h3>Progreso General del Proyecto</h3>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="projectProgress">
+                            <span class="progress-text">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-section">
+                    <h3>Línea de Tiempo del Proyecto</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h4>Fase 1: Iniciación y Planificación</h4>
+                                <p>Semanas 1-4: Definición de requisitos, conformación de equipo, análisis de datos históricos</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h4>Fase 2: Desarrollo del Modelo</h4>
+                                <p>Semanas 5-12: Entrenamiento de modelos, validación, ajuste de hiperparámetros</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h4>Fase 3: Integración y Testing</h4>
+                                <p>Semanas 13-18: Integración con sistemas core, pruebas UAT, stress testing</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h4>Fase 4: Despliegue y Monitoreo</h4>
+                                <p>Semanas 19-24: Go-live progresivo, monitoreo continuo, ajustes post-implementación</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ITIL Tab -->
+        <section class="tab-content" id="itil">
+            <div class="sub-nav">
+                <button class="sub-tab active" data-subtab="incidentes">Incidentes</button>
+                <button class="sub-tab" data-subtab="problemas">Problemas</button>
+                <button class="sub-tab" data-subtab="cambios">Cambios</button>
+                <button class="sub-tab" data-subtab="servicedesk">Service Desk</button>
+            </div>
+
+            <!-- Incidentes -->
+            <div class="sub-content active" id="incidentes">
+                <div class="section-header">
+                    <h2><i class="fas fa-exclamation-circle"></i> Gestión de Incidentes ITIL 4</h2>
+                    <button class="btn-primary" onclick="showAddForm('incidente')">
+                        <i class="fas fa-plus"></i> Nuevo Incidente
+                    </button>
+                </div>
+                <div class="search-filter">
+                    <input type="text" placeholder="Buscar incidentes..." class="search-input" onkeyup="filterTable('incidentesTable', this.value)">
+                </div>
+                <div class="table-container">
+                    <table id="incidentesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Severidad</th>
+                                <th>Responsable</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incidentesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Problemas -->
+            <div class="sub-content" id="problemas">
+                <div class="section-header">
+                    <h2><i class="fas fa-tools"></i> Gestión de Problemas ITIL 4</h2>
+                    <button class="btn-primary" onclick="showAddForm('problema')">
+                        <i class="fas fa-plus"></i> Nuevo Problema
+                    </button>
+                </div>
+                <div class="search-filter">
+                    <input type="text" placeholder="Buscar problemas..." class="search-input" onkeyup="filterTable('problemasTable', this.value)">
+                </div>
+                <div class="table-container">
+                    <table id="problemasTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Causa Raíz</th>
+                                <th>Responsable</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="problemasBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Cambios -->
+            <div class="sub-content" id="cambios">
+                <div class="section-header">
+                    <h2><i class="fas fa-exchange-alt"></i> Gestión de Cambios (CAB)</h2>
+                    <button class="btn-primary" onclick="showAddForm('cambio')">
+                        <i class="fas fa-plus"></i> Nuevo Cambio
+                    </button>
+                </div>
+                <div class="search-filter">
+                    <input type="text" placeholder="Buscar cambios..." class="search-input" onkeyup="filterTable('cambiosTable', this.value)">
+                </div>
+                <div class="table-container">
+                    <table id="cambiosTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Tipo</th>
+                                <th>Impacto</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cambiosBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Service Desk -->
+            <div class="sub-content" id="servicedesk">
+                <div class="section-header">
+                    <h2><i class="fas fa-headset"></i> Service Desk - Métricas</h2>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Tiempo Promedio de Resolución</h3>
+                        <p class="metric-value" id="avgResolutionTime">2.5 horas</p>
+                    </div>
+                    <div class="metric-card">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Tasa de Resolución Primer Contacto</h3>
+                        <p class="metric-value" id="firstContactResolution">78%</p>
+                    </div>
+                    <div class="metric-card">
+                        <i class="fas fa-star"></i>
+                        <h3>Satisfacción del Usuario</h3>
+                        <p class="metric-value" id="userSatisfaction">4.6/5.0</p>
+                    </div>
+                    <div class="metric-card">
+                        <i class="fas fa-ticket-alt"></i>
+                        <h3>Incidentes Activos</h3>
+                        <p class="metric-value" id="activeIncidents">12</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PMBOK Tab -->
+        <section class="tab-content" id="pmbok">
+            <div class="sub-nav">
+                <button class="sub-tab active" data-subtab="riesgos">Riesgos</button>
+                <button class="sub-tab" data-subtab="hitos">Hitos</button>
+                <button class="sub-tab" data-subtab="lecciones">Lecciones Aprendidas</button>
+                <button class="sub-tab" data-subtab="interesados">Interesados</button>
+            </div>
+
+            <!-- Riesgos -->
+            <div class="sub-content active" id="riesgos">
+                <div class="section-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Gestión de Riesgos PMBOK 7</h2>
+                    <button class="btn-primary" onclick="showAddForm('riesgo')">
+                        <i class="fas fa-plus"></i> Nuevo Riesgo
+                    </button>
+                </div>
+                <div class="search-filter">
+                    <input type="text" placeholder="Buscar riesgos..." class="search-input" onkeyup="filterTable('riesgosTable', this.value)">
+                </div>
+                <div class="table-container">
+                    <table id="riesgosTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Probabilidad</th>
+                                <th>Impacto</th>
+                                <th>Mitigación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="riesgosBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Hitos -->
+            <div class="sub-content" id="hitos">
+                <div class="section-header">
+                    <h2><i class="fas fa-flag-checkered"></i> Hitos del Proyecto</h2>
+                    <button class="btn-primary" onclick="showAddForm('hito')">
+                        <i class="fas fa-plus"></i> Nuevo Hito
+                    </button>
+                </div>
+                <div class="search-filter">
+                    <input type="text" placeholder="Buscar hitos..." class="search-input" onkeyup="filterTable('hitosTable', this.value)">
+                </div>
+                <div class="table-container">
+                    <table id="hitosTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha Planificada</th>
+                                <th>Descripción</th>
+                                <th>Entregable</th>
+                                <th>Responsable</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hitosBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Lecciones Aprendidas -->
+            <div class="sub-content" id="lecciones">
+                <div class="section-header">
+                    <h2><i class="fas fa-lightbulb"></i> Lecciones Aprendidas</h2>
+                    <button class="btn-primary" onclick="showAddForm('leccion')">
+                        <i class="fas fa-plus"></i> Nueva Lección
+                    </button>
+                </div>
+                <div class="search-filter">
+                    <input type="text" placeholder="Buscar lecciones..." class="search-input" onkeyup="filterTable('leccionesTable', this.value)">
+                </div>
+                <div class="table-container">
+                    <table id="leccionesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Situación</th>
+                                <th>Lección</th>
+                                <th>Categoría</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leccionesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interesados -->
+            <div class="sub-content" id="interesados">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> Gestión de Interesados</h2>
+                </div>
+                <div class="stakeholders-grid">
+                    <div class="stakeholder-card">
+                        <i class="fas fa-user-tie"></i>
+                        <h3>Sponsor Ejecutivo</h3>
+                        <p><strong>Gerente General</strong></p>
+                        <p>Interés: Alto | Poder: Alto</p>
+                        <span class="badge badge-success">Comprometido</span>
+                    </div>
+                    <div class="stakeholder-card">
+                        <i class="fas fa-user-shield"></i>
+                        <h3>Director de TI</h3>
+                        <p><strong>CIO</strong></p>
+                        <p>Interés: Alto | Poder: Alto</p>
+                        <span class="badge badge-success">Comprometido</span>
+                    </div>
+                    <div class="stakeholder-card">
+                        <i class="fas fa-user-cog"></i>
+                        <h3>Equipo de Desarrollo</h3>
+                        <p><strong>15 profesionales</strong></p>
+                        <p>Interés: Alto | Poder: Medio</p>
+                        <span class="badge badge-primary">Participativo</span>
+                    </div>
+                    <div class="stakeholder-card">
+                        <i class="fas fa-user-check"></i>
+                        <h3>Área de Cumplimiento</h3>
+                        <p><strong>Compliance Officer</strong></p>
+                        <p>Interés: Alto | Poder: Alto</p>
+                        <span class="badge badge-warning">Neutral</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Dashboard Tab -->
-        <div id="dashboard-tab" class="tab-content active">
-            <!-- KPIs -->
-            <div class="kpi-grid">
-                <div class="kpi-card kpi-blue">
-                    <div class="kpi-header">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
-                        </svg>
-                        <span class="kpi-value" id="total-proyectos">0</span>
-                    </div>
-                    <p class="kpi-label">Proyectos Activos</p>
-                </div>
-
-                <div class="kpi-card kpi-red">
-                    <div class="kpi-header">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
-                        <span class="kpi-value" id="total-incidentes">0</span>
-                    </div>
-                    <p class="kpi-label">Incidentes Abiertos</p>
-                </div>
-
-                <div class="kpi-card kpi-yellow">
-                    <div class="kpi-header">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
-                        <span class="kpi-value" id="total-riesgos">0</span>
-                    </div>
-                    <p class="kpi-label">Riesgos Identificados</p>
-                </div>
-
-                <div class="kpi-card kpi-green">
-                    <div class="kpi-header">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span class="kpi-value" id="total-cambios">0</span>
-                    </div>
-                    <p class="kpi-label">Cambios Gestionados</p>
-                </div>
+        <section class="tab-content" id="dashboard">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-line"></i> Dashboard de Indicadores</h2>
+                <button class="btn-secondary" onclick="updateAllCharts()">
+                    <i class="fas fa-sync-alt"></i> Actualizar Gráficos
+                </button>
             </div>
-
-            <!-- Gráficos -->
             <div class="charts-grid">
-                <div class="chart-card">
-                    <h3 class="chart-title">Progreso de Proyectos (PMBOK)</h3>
-                    <canvas id="chart-progreso"></canvas>
+                <div class="chart-container">
+                    <h3>Incidentes por Severidad</h3>
+                    <canvas id="incidentsSeverityChart"></canvas>
                 </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">Gestión de Costos (PMBOK)</h3>
-                    <canvas id="chart-presupuesto"></canvas>
+                <div class="chart-container">
+                    <h3>Estado de Cambios</h3>
+                    <canvas id="changesStatusChart"></canvas>
                 </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">Incidentes por Prioridad (ITIL)</h3>
-                    <canvas id="chart-incidentes"></canvas>
+                <div class="chart-container">
+                    <h3>Evolución de Riesgos Activos</h3>
+                    <canvas id="risksTimelineChart"></canvas>
                 </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">Riesgos por Impacto (PMBOK)</h3>
-                    <canvas id="chart-riesgos"></canvas>
+                <div class="chart-container">
+                    <h3>Distribución PMBOK (Áreas de Conocimiento)</h3>
+                    <canvas id="pmbokAreasChart"></canvas>
                 </div>
-            </div>
-
-            <!-- Resumen Financiero -->
-            <div class="financial-summary">
-                <h3 class="summary-title">Resumen Financiero (PMBOK)</h3>
-                <div class="summary-grid">
-                    <div class="summary-card">
-                        <p class="summary-label">Presupuesto Total</p>
-                        <p class="summary-value summary-green" id="presupuesto-total">$0</p>
-                    </div>
-                    <div class="summary-card">
-                        <p class="summary-label">Gastado Total</p>
-                        <p class="summary-value summary-orange" id="gastado-total">$0</p>
-                    </div>
-                    <div class="summary-card">
-                        <p class="summary-label">Disponible</p>
-                        <p class="summary-value summary-blue" id="disponible-total">$0</p>
-                    </div>
+                <div class="chart-container">
+                    <h3>Incidentes: Resueltos vs Pendientes</h3>
+                    <canvas id="incidentsResolvedChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Madurez de Prácticas ITIL 4</h3>
+                    <canvas id="itilMaturityChart"></canvas>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Proyectos Tab -->
-        <div id="proyectos-tab" class="tab-content">
-            <div class="form-card">
-                <h3 class="form-title">Agregar Nuevo Proyecto</h3>
-                <div class="form-grid">
-                    <input type="text" id="proyecto-nombre" class="form-input" placeholder="Nombre del proyecto">
-                    <select id="proyecto-fase" class="form-input">
-                        <option>Inicio</option>
-                        <option>Planificación</option>
-                        <option>Ejecución</option>
-                        <option>Monitoreo</option>
-                        <option>Cierre</option>
-                    </select>
-                    <input type="number" id="proyecto-presupuesto" class="form-input" placeholder="Presupuesto">
-                    <input type="date" id="proyecto-inicio" class="form-input">
-                    <input type="date" id="proyecto-fin" class="form-input">
-                    <button id="btn-agregar-proyecto" class="btn btn-primary">
-                        <svg class="icon-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        </svg>
-                        Agregar Proyecto
+        <!-- Base de Conocimientos Tab -->
+        <section class="tab-content" id="conocimiento">
+            <div class="section-header">
+                <h2><i class="fas fa-book"></i> Base de Conocimientos</h2>
+                <button class="btn-primary" onclick="showAddForm('conocimiento')">
+                    <i class="fas fa-plus"></i> Nuevo Artículo
+                </button>
+            </div>
+            <div class="search-filter">
+                <input type="text" placeholder="Buscar artículos..." class="search-input" onkeyup="filterKnowledge(this.value)">
+            </div>
+            <div class="knowledge-grid" id="knowledgeGrid"></div>
+        </section>
+
+        <!-- Reportes Tab -->
+        <section class="tab-content" id="reportes">
+            <div class="section-header">
+                <h2><i class="fas fa-file-download"></i> Exportar Reportes</h2>
+            </div>
+            <div class="reports-section">
+                <div class="report-card">
+                    <i class="fas fa-file-code"></i>
+                    <h3>Exportar Datos Completos (JSON)</h3>
+                    <p>Descarga todos los datos del proyecto en formato JSON para respaldo o análisis externo</p>
+                    <button class="btn-primary" onclick="exportJSON()">
+                        <i class="fas fa-download"></i> Descargar JSON
+                    </button>
+                </div>
+                <div class="report-card">
+                    <i class="fas fa-file-csv"></i>
+                    <h3>Exportar Datos (CSV)</h3>
+                    <p>Descarga todos los registros en formato CSV compatible con Excel</p>
+                    <button class="btn-primary" onclick="exportCSV()">
+                        <i class="fas fa-download"></i> Descargar CSV
+                    </button>
+                </div>
+                <div class="report-card">
+                    <i class="fas fa-file-import"></i>
+                    <h3>Importar Datos (JSON)</h3>
+                    <p>Carga datos previamente exportados para restaurar el estado del proyecto</p>
+                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+                    <button class="btn-secondary" onclick="document.getElementById('importFile').click()">
+                        <i class="fas fa-upload"></i> Importar JSON
+                    </button>
+                </div>
+                <div class="report-card">
+                    <i class="fas fa-database"></i>
+                    <h3>Cargar Datos de Ejemplo</h3>
+                    <p>Carga 12 registros iniciales realistas para comenzar la simulación</p>
+                    <button class="btn-success" onclick="loadSampleData()">
+                        <i class="fas fa-play-circle"></i> Cargar Datos
+                    </button>
+                </div>
+                <div class="report-card">
+                    <i class="fas fa-trash-alt"></i>
+                    <h3>Limpiar Todos los Datos</h3>
+                    <p>Elimina todos los registros y reinicia el proyecto (acción irreversible)</p>
+                    <button class="btn-danger" onclick="clearAllData()">
+                        <i class="fas fa-exclamation-triangle"></i> Limpiar Todo
                     </button>
                 </div>
             </div>
-
-            <div id="lista-proyectos" class="items-list"></div>
-        </div>
-
-        <!-- Incidentes Tab -->
-        <div id="incidentes-tab" class="tab-content">
-            <div class="form-card">
-                <h3 class="form-title">Registrar Nuevo Incidente (ITIL)</h3>
-                <div class="form-grid">
-                    <input type="text" id="incidente-titulo" class="form-input" placeholder="Título del incidente">
-                    <select id="incidente-prioridad" class="form-input">
-                        <option>Baja</option>
-                        <option>Media</option>
-                        <option>Alta</option>
-                        <option>Crítica</option>
-                    </select>
-                    <select id="incidente-proyecto" class="form-input">
-                        <option value="">Seleccionar proyecto</option>
-                    </select>
-                    <button id="btn-agregar-incidente" class="btn btn-danger">
-                        <svg class="icon-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        </svg>
-                        Registrar Incidente
-                    </button>
-                </div>
-            </div>
-
-            <div id="lista-incidentes" class="items-list"></div>
-        </div>
-
-        <!-- Riesgos Tab -->
-        <div id="riesgos-tab" class="tab-content">
-            <div class="form-card">
-                <h3 class="form-title">Identificar Nuevo Riesgo (PMBOK)</h3>
-                <div class="form-grid">
-                    <input type="text" id="riesgo-descripcion" class="form-input full-width" placeholder="Descripción del riesgo">
-                    <select id="riesgo-probabilidad" class="form-input">
-                        <option>Baja</option>
-                        <option>Media</option>
-                        <option>Alta</option>
-                    </select>
-                    <select id="riesgo-impacto" class="form-input">
-                        <option>Bajo</option>
-                        <option>Medio</option>
-                        <option>Alto</option>
-                    </select>
-                    <select id="riesgo-estrategia" class="form-input">
-                        <option>Evitar</option>
-                        <option>Mitigar</option>
-                        <option>Transferir</option>
-                        <option>Aceptar</option>
-                    </select>
-                    <select id="riesgo-proyecto" class="form-input">
-                        <option value="">Seleccionar proyecto</option>
-                    </select>
-                    <button id="btn-agregar-riesgo" class="btn btn-warning">
-                        <svg class="icon-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        </svg>
-                        Identificar Riesgo
-                    </button>
-                </div>
-            </div>
-
-            <div id="lista-riesgos" class="items-list"></div>
-        </div>
-
-        <!-- Cambios Tab -->
-        <div id="cambios-tab" class="tab-content">
-            <div class="form-card">
-                <h3 class="form-title">Solicitar Cambio (ITIL)</h3>
-                <div class="form-grid">
-                    <input type="text" id="cambio-descripcion" class="form-input full-width" placeholder="Descripción del cambio">
-                    <select id="cambio-tipo" class="form-input">
-                        <option>Menor</option>
-                        <option>Normal</option>
-                        <option>Mayor</option>
-                        <option>Emergencia</option>
-                    </select>
-                    <select id="cambio-proyecto" class="form-input">
-                        <option value="">Seleccionar proyecto</option>
-                    </select>
-                    <button id="btn-agregar-cambio" class="btn btn-success">
-                        <svg class="icon-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        </svg>
-                        Solicitar Cambio
-                    </button>
-                </div>
-            </div>
-
-            <div id="lista-cambios" class="items-list"></div>
-        </div>
+        </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p class="footer-title">Sistema de Gestión de Proyectos IA - Integración ITIL & PMBOK</p>
-        <p class="footer-subtitle">Caso Práctico: Implementación de IA para Atención al Cliente en Telecomunicaciones</p>
-    </footer>
+    <!-- Modal para Formularios -->
+    <div class="modal" id="formModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
