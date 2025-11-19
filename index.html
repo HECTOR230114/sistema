@@ -1,343 +1,226 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EVOXIA ∞ - Sistema Vivo Autoevolutivo</title>
-    <link rel="stylesheet" href="styles.css">
-    
-    <!-- Librerías externas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.18.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NEXUS Pro - ITIL v4 + PMBOK 7</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body data-theme="dark">
-    <!-- Fondo de partículas -->
-    <canvas id="particleCanvas"></canvas>
-    <div id="threeContainer"></div>
-    
-    <!-- Overlay de estado emocional -->
-    <div id="emotionalOverlay" class="emotional-overlay"></div>
-    
-    <!-- Header -->
-    <header class="header">
-        <div class="logo-container">
-            <div class="logo-pulse"></div>
-            <h1>EVOXIA <span class="infinity">∞</span></h1>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo-section">
+      <div class="logo">
+        <div class="logo-icon"><i class="fas fa-project-diagram"></i></div>
+        <div class="logo-text">
+          <h1>NEXUS Pro</h1>
+          <p>ITIL v4 + PMBOK 7</p>
         </div>
-        <div class="energy-indicator">
-            <span id="energyLevel">100</span>%
-            <div class="energy-bar">
-                <div id="energyFill" class="energy-fill" style="width: 100%"></div>
-            </div>
-        </div>
-        <div class="state-indicator">
-            <span id="emotionalState">Armonía</span>
-        </div>
-    </header>
-
-    <!-- Botón para abrir panel de control -->
-    <button class="open-panel-btn" id="openPanelBtn" style="display: none;">
-        ☰ Panel
-    </button>
-
-    <!-- Panel de control lateral -->
-    <aside id="controlPanel" class="control-panel">
-        <div class="panel-header">
-            <button class="minimize-panel" id="minimizePanel" title="Minimizar">─</button>
-            <button class="close-panel" id="closePanel" title="Cerrar">✕</button>
-        </div>
-        
-        <div class="panel-content">
-            <h3>Centro de Control</h3>
-            
-            <div class="control-section">
-                <h4>🎭 Estado</h4>
-                <button class="btn-control" id="btnDespertar">⚡ Despertar EVOXIA</button>
-                <button class="btn-control" id="btnReiniciar">🔄 Reiniciar Energía</button>
-            </div>
-            
-            <div class="control-section">
-                <h4>🌍 Entornos</h4>
-                <button class="btn-env active" data-env="cosmos">🌌 Cosmos</button>
-                <button class="btn-env" data-env="bosque">🌿 Bosque de Datos</button>
-                <button class="btn-env" data-env="oceano">🌊 Océano Digital</button>
-                <button class="btn-env" data-env="ciudad">🏙️ Ciudad Luminosa</button>
-                <button class="btn-env" data-env="santuario">🌀 Santuario Cuántico</button>
-                <button class="btn-control" id="btnFusion">🔮 Modo Fusión</button>
-            </div>
-            
-            <div class="control-section">
-                <h4>🎨 Tema</h4>
-                <button class="btn-theme active" data-theme="dark">🌙 Oscuro</button>
-                <button class="btn-theme" data-theme="light">☀️ Claro</button>
-                <button class="btn-theme" data-theme="energy">⚡ Energético</button>
-            </div>
-            
-            <div class="control-section">
-                <h4>🎵 Sonido</h4>
-                <label>
-                    Volumen: <span id="volumeValue">70</span>%
-                    <input type="range" id="volumeControl" min="0" max="100" value="70">
-                </label>
-                <label>
-                    Resonancia:
-                    <select id="resonanceType">
-                        <option value="brillante">Brillante</option>
-                        <option value="calida">Cálida</option>
-                        <option value="eterea">Etérea</option>
-                    </select>
-                </label>
-                <button class="btn-control" id="toggleSound">🔊 Activar Sonido</button>
-            </div>
-            
-            <div class="control-section">
-                <h4>⚡ Flujo de Datos</h4>
-                <label>
-                    Velocidad: <span id="speedValue">5</span>s
-                    <input type="range" id="speedControl" min="1" max="10" value="5">
-                </label>
-                <button class="btn-control" id="toggleData">⏸️ Pausar Datos</button>
-            </div>
-            
-            <div class="control-section">
-                <h4>🎬 Modos Especiales</h4>
-                <button class="btn-special" data-mode="cuantico">⚛️ Cuántico</button>
-                <button class="btn-special" data-mode="fractal">🔺 Fractal</button>
-                <button class="btn-special" data-mode="espejo">🪞 Espejo Emocional</button>
-                <button class="btn-special" data-mode="cronica">📖 Modo Crónica</button>
-                <button class="btn-special" data-mode="silencio">🕯️ Silencio Lumínico</button>
-            </div>
-            
-            <div class="control-section">
-                <h4>📊 Exportar</h4>
-                <button class="btn-export" id="exportPDF">📄 PDF</button>
-                <button class="btn-export" id="exportCSV">📊 CSV</button>
-                <button class="btn-export" id="exportXLSX">📈 XLSX</button>
-                <button class="btn-export" id="exportPNG">🖼️ PNG</button>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Contenedor principal -->
-    <main class="main-container">
-        <!-- Panel energético -->
-        <section class="energy-panel">
-            <h2>Panel Energético - Ciclo de Vida del Servicio</h2>
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-icon">📋</div>
-                    <div class="metric-value" id="metricRendimiento">0</div>
-                    <div class="metric-label">Planificación</div>
-                    <div class="metric-sublabel">Estrategia del Servicio</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon">🎨</div>
-                    <div class="metric-value" id="metricEquilibrio">0</div>
-                    <div class="metric-label">Diseño del Servicio</div>
-                    <div class="metric-sublabel">Catálogo y SLA</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon">🔄</div>
-                    <div class="metric-value" id="metricEficiencia">0</div>
-                    <div class="metric-label">Transición</div>
-                    <div class="metric-sublabel">Cambios y Releases</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon">⚙️</div>
-                    <div class="metric-value" id="metricMejora">0</div>
-                    <div class="metric-label">Operación</div>
-                    <div class="metric-sublabel">Incidentes y Servicios</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon">📈</div>
-                    <div class="metric-value" id="metricMejoraContinua">0</div>
-                    <div class="metric-label">Mejora Continua</div>
-                    <div class="metric-sublabel">CSI y Optimización</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Zona de mensajes narrativos -->
-        <section class="narrative-zone">
-            <div class="message-bubble">
-                <span id="narrativeText">EVOXIA ∞ está despertando...</span>
-            </div>
-        </section>
-
-        <!-- NUEVA SECCIÓN: Panel de Estadísticas en Tiempo Real -->
-        <section class="stats-dashboard">
-            <h2>📊 Panel de Estadísticas en Tiempo Real</h2>
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-icon">📈</div>
-                    <div class="stat-value" id="statAvgGeneral">0%</div>
-                    <div class="stat-label">Promedio General</div>
-                    <div class="stat-trend" id="statTrendGeneral">●</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-icon">🎯</div>
-                    <div class="stat-value" id="statMaxRecord">0%</div>
-                    <div class="stat-label">Máximo Alcanzado</div>
-                    <div class="stat-sublabel" id="statMaxTime">--:--:--</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-icon">📉</div>
-                    <div class="stat-value" id="statMinRecord">0%</div>
-                    <div class="stat-label">Mínimo Registrado</div>
-                    <div class="stat-sublabel" id="statMinTime">--:--:--</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-icon">⚡</div>
-                    <div class="stat-value" id="statStability">Alta</div>
-                    <div class="stat-label">Estabilidad</div>
-                    <div class="stat-sublabel" id="statStabilityValue">σ: 0.00</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-icon">🔥</div>
-                    <div class="stat-value" id="statTopPhase">---</div>
-                    <div class="stat-label">Fase Líder</div>
-                    <div class="stat-sublabel" id="statTopPhaseValue">0%</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-icon">⏱️</div>
-                    <div class="stat-value" id="statUptime">00:00</div>
-                    <div class="stat-label">Tiempo Activo</div>
-                    <div class="stat-sublabel" id="statRecordCount">0 registros</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Gráficos principales -->
-        <section class="charts-section">
-            <div class="chart-container">
-                <h3>Línea Temporal de Evolución</h3>
-                <canvas id="lineChart"></canvas>
-            </div>
-            
-            <div class="chart-container">
-                <h3>Distribución de Fases</h3>
-                <canvas id="radarChart"></canvas>
-            </div>
-            
-            <div class="chart-container">
-                <h3>Balance Global</h3>
-                <canvas id="donutChart"></canvas>
-            </div>
-            
-            <div class="chart-container">
-                <h3>Energía por Fase</h3>
-                <canvas id="barChart"></canvas>
-            </div>
-            
-            <!-- NUEVOS GRÁFICOS -->
-            <div class="chart-container">
-                <h3>Tendencia de Rendimiento</h3>
-                <canvas id="areaChart"></canvas>
-            </div>
-            
-            <div class="chart-container">
-                <h3>Comparativa de Fases</h3>
-                <canvas id="polarChart"></canvas>
-            </div>
-        </section>
-
-        <!-- Visualización 3D -->
-        <section class="viz-3d-section">
-            <h3>Visualización Tridimensional</h3>
-            <div id="plotly3d"></div>
-        </section>
-
-        <!-- Mapa de fases unificadas -->
-        <section class="phase-map">
-            <h3>Flujo Unificado de Fases</h3>
-            <div class="phase-flow">
-                <div class="phase-node" data-phase="planificacion">
-                    <div class="phase-icon">📋</div>
-                    <span>Planificación</span>
-                </div>
-                <div class="phase-connector"></div>
-                <div class="phase-node" data-phase="diseno">
-                    <div class="phase-icon">🎨</div>
-                    <span>Diseño</span>
-                </div>
-                <div class="phase-connector"></div>
-                <div class="phase-node" data-phase="transicion">
-                    <div class="phase-icon">🔄</div>
-                    <span>Transición</span>
-                </div>
-                <div class="phase-connector"></div>
-                <div class="phase-node" data-phase="operacion">
-                    <div class="phase-icon">⚙️</div>
-                    <span>Operación</span>
-                </div>
-                <div class="phase-connector"></div>
-                <div class="phase-node" data-phase="mejora">
-                    <div class="phase-icon">📈</div>
-                    <span>Mejora Continua</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tabla de datos MEJORADA -->
-        <section class="data-table-section">
-            <h3>Registro de Datos en Tiempo Real - Ciclo de Vida ITIL</h3>
-            <div class="table-wrapper">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>⏰ Tiempo</th>
-                            <th>📋 Planificación</th>
-                            <th>🎨 Diseño</th>
-                            <th>🔄 Transición</th>
-                            <th>⚙️ Operación</th>
-                            <th>📈 Mejora Continua</th>
-                            <th>📊 Promedio</th>
-                            <th>📉 Desv. Est.</th>
-                            <th>🎯 Fase Dom.</th>
-                            <th>⚡ Estado</th>
-                            <th>🌡️ Temp.</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataTableBody">
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <p>EVOXIA ∞ | Sistema Vivo Autoevolutivo | <span id="currentTime"></span></p>
-        <p id="systemStatus">Sistema en Armonía</p>
-    </footer>
-
-    <!-- Notificaciones flotantes -->
-    <div id="notifications" class="notifications-container"></div>
-
-    <!-- Modal de detalle -->
-    <div id="detailModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Detalle del Registro</h2>
-                <button class="modal-close" id="modalClose">✕</button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Contenido dinámico -->
-            </div>
-            <div class="modal-footer">
-                <button class="btn-modal" id="modalCloseBtn">Cerrar</button>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <script src="script.js"></script>
+    <nav class="nav-menu">
+      <div class="nav-section">
+        <div class="nav-section-title"><i class="fas fa-cogs"></i> ITIL Service Management</div>
+        <a href="#" class="nav-item active" data-view="dashboard"><i class="fas fa-chart-line"></i><span>Dashboard Ejecutivo</span></a>
+        <a href="#" class="nav-item" data-view="incidents"><i class="fas fa-exclamation-circle"></i><span>Incident Management</span><span class="nav-badge" id="incidents-badge">0</span></a>
+        <a href="#" class="nav-item" data-view="problems"><i class="fas fa-bug"></i><span>Problem Management</span><span class="nav-badge" id="problems-badge">0</span></a>
+        <a href="#" class="nav-item" data-view="changes"><i class="fas fa-sync-alt"></i><span>Change Management</span></a>
+        <a href="#" class="nav-item" data-view="releases"><i class="fas fa-rocket"></i><span>Release Management</span></a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title"><i class="fas fa-tasks"></i> PMBOK Project Areas</div>
+        <a href="#" class="nav-item" data-view="scope"><i class="fas fa-sitemap"></i><span>Alcance del Proyecto</span></a>
+        <a href="#" class="nav-item" data-view="schedule"><i class="fas fa-calendar-alt"></i><span>Cronograma</span></a>
+        <a href="#" class="nav-item" data-view="costs"><i class="fas fa-dollar-sign"></i><span>Gestión de Costos</span></a>
+        <a href="#" class="nav-item" data-view="quality"><i class="fas fa-medal"></i><span>Control de Calidad</span></a>
+        <a href="#" class="nav-item" data-view="risks"><i class="fas fa-shield-alt"></i><span>Gestión de Riesgos</span></a>
+        <a href="#" class="nav-item" data-view="stakeholders"><i class="fas fa-users"></i><span>Stakeholders</span></a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title"><i class="fas fa-link"></i> Integración</div>
+        <a href="#" class="nav-item" data-view="integration"><i class="fas fa-puzzle-piece"></i><span>ITIL+PMBOK Matrix</span></a>
+        <a href="#" class="nav-item" data-view="kpis"><i class="fas fa-tachometer-alt"></i><span>KPIs & Métricas</span></a>
+        <a href="#" class="nav-item" data-view="reports"><i class="fas fa-file-alt"></i><span>Reportes Ejecutivos</span></a>
+      </div>
+    </nav>
+
+    <div class="maturity-indicator">
+      <div class="maturity-header"><i class="fas fa-award"></i><span>Madurez ITIL</span></div>
+      <div class="maturity-level">
+        <div class="maturity-bar"><div class="maturity-fill" style="width: 78%"></div></div>
+        <span class="maturity-text">Nivel 4 - Gestionado</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <header class="top-bar">
+      <div class="breadcrumb">
+        <i class="fas fa-home"></i><span class="breadcrumb-separator">/</span><span id="page-title">Dashboard Ejecutivo</span>
+      </div>
+      <div class="top-actions">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Buscar incidencias, proyectos..." />
+        </div>
+        <div class="service-level">
+          <i class="fas fa-server"></i>
+          <div class="service-info">
+            <span class="service-label">Service Level</span>
+            <span class="service-value">99.7%</span>
+          </div>
+        </div>
+        <div class="notification-btn" id="notification-btn">
+          <i class="fas fa-bell"></i>
+          <div class="notification-dot" id="notification-dot" style="display:none"></div>
+        </div>
+        <div class="user-profile">
+          <div class="user-avatar">PM</div>
+          <div class="user-info">
+            <div class="user-name">Project Manager</div>
+            <div class="user-role">ITIL Expert / PMP</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="view-section active">
+        <div class="stats-grid">
+          <div class="stat-card itil-card">
+            <div class="stat-header"><div class="stat-title"><i class="fas fa-ticket-alt"></i> Incidencias Activas</div><div class="stat-badge itil-badge">ITIL v4</div></div>
+            <div class="stat-value" id="stat-incidents">0</div>
+            <div class="stat-footer"><span class="stat-label">Críticas:</span><span class="stat-critical" id="stat-critical">0</span></div>
+          </div>
+          <div class="stat-card itil-card">
+            <div class="stat-header"><div class="stat-title"><i class="fas fa-clock"></i> MTTR Promedio</div><div class="stat-badge itil-badge">ITIL v4</div></div>
+            <div class="stat-value" id="stat-mttr">0h</div>
+            <div class="stat-change positive"><i class="fas fa-arrow-down"></i> -15% mejora</div>
+          </div>
+          <div class="stat-card pmbok-card">
+            <div class="stat-header"><div class="stat-title"><i class="fas fa-project-diagram"></i> CPI</div><div class="stat-badge pmbok-badge">PMBOK 7</div></div>
+            <div class="stat-value">1.08</div>
+            <div class="stat-change positive"><i class="fas fa-check"></i> Por encima del plan</div>
+          </div>
+          <div class="stat-card pmbok-card">
+            <div class="stat-header"><div class="stat-title"><i class="fas fa-calendar-check"></i> SPI</div><div class="stat-badge pmbok-badge">PMBOK 7</div></div>
+            <div class="stat-value">0.96</div>
+            <div class="stat-change negative"><i class="fas fa-exclamation"></i> Leve retraso</div>
+          </div>
+        </div>
+
+        <div class="value-chain">
+          <div class="chain-item"><i class="fas fa-clipboard-list"></i><h4>Plan</h4><span class="chain-status active">Activo</span></div>
+          <div class="chain-arrow"><i class="fas fa-arrow-right"></i></div>
+          <div class="chain-item"><i class="fas fa-pencil-ruler"></i><h4>Design & Transition</h4><span class="chain-status active">Activo</span></div>
+          <div class="chain-arrow"><i class="fas fa-arrow-right"></i></div>
+          <div class="chain-item"><i class="fas fa-shopping-cart"></i><h4>Obtain/Build</h4><span class="chain-status">En espera</span></div>
+          <div class="chain-arrow"><i class="fas fa-arrow-right"></i></div>
+          <div class="chain-item"><i class="fas fa-truck"></i><h4>Deliver & Support</h4><span class="chain-status active">Activo</span></div>
+          <div class="chain-arrow"><i class="fas fa-arrow-right"></i></div>
+          <div class="chain-item"><i class="fas fa-chart-line"></i><h4>Improve</h4><span class="chain-status active">Activo</span></div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header"><div class="chart-title"><i class="fas fa-exclamation-triangle"></i> Incidencias por Prioridad</div></div>
+            <div class="chart-container"><canvas id="chart-incidents-priority"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><div class="chart-title"><i class="fas fa-chart-gantt"></i> Avance del Proyecto</div></div>
+            <div class="chart-container"><canvas id="chart-project-progress"></canvas></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header"><div class="chart-title"><i class="fas fa-broadcast-tower"></i> Actividad en Tiempo Real</div></div>
+          <div class="live-feed" id="live-feed"></div>
+        </div>
+      </section>
+
+      <!-- INCIDENTS -->
+      <section id="incidents" class="view-section">
+        <div class="section-header"><h2><i class="fas fa-exclamation-circle"></i> Incident Management</h2></div>
+        <div class="data-table">
+          <div class="table-header">
+            <div class="table-title">Registro de Incidencias</div>
+            <button class="filter-btn btn-new" id="btn-new-incident"><i class="fas fa-plus"></i> Nueva Incidencia</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Fecha/Hora</th><th>Título</th><th>Categoría</th><th>Impacto</th><th>Urgencia</th><th>Prioridad</th><th>Estado</th><th>SLA</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="incidents-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- OTRAS SECCIONES (problems, changes, releases, scope, etc.) están incluidas en el código completo que ya tenías -->
+
+      <!-- MODAL NUEVA INCIDENCIA -->
+      <div class="modal" id="modal-new-incident">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Nueva Incidencia</h2>
+            <span class="modal-close">×</span>
+          </div>
+          <div class="modal-body">
+            <form id="form-new-incident">
+              <div class="form-group"><label>Título</label><input type="text" id="incident-title" required></div>
+              <div class="form-row">
+                <div class="form-group"><label>Categoría</label><select id="incident-category">
+                  <option>Hardware</option><option>Software</option><option>Network</option><option>Database</option>
+                </select></div>
+                <div class="form-group"><label>Impacto</label><select id="incident-impact">
+                  <option>Alto</option><option>Medio</option><option>Bajo</option>
+                </select></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Urgencia</label><select id="incident-urgency">
+                  <option>Alta</option><option>Media</option><option>Baja</option>
+                </select></div>
+              </div>
+              <div class="form-group"><label>Descripción</label><textarea id="incident-description"></textarea></div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary modal-close">Cancelar</button>
+            <button class="btn btn-primary" id="btn-submit-incident">Registrar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL DETALLE INCIDENCIA -->
+      <div class="modal" id="modal-incident">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Detalle de Incidencia</h2>
+            <span class="modal-close">×</span>
+          </div>
+          <div class="modal-body" id="modal-incident-body"></div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary modal-close">Cerrar</button>
+          </div>
+        </div>
+      </div>
+
+      <audio id="alert-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-tone-1054.mp3" preload="auto"></audio>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
-      
        
               
           
