@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SIGIO - Sistema Inteligente de Gestión de Incidencias</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="https://cdn.jsdelivr.net/npm/chart.js"></link>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>SIGIO</h2>
+      <p>Sistema Inteligente de Gestión</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#inicio" class="nav-item active"><i class="fas fa-home"></i> Inicio</a>
+      <a href="#incidencias" class="nav-item"><i class="fas fa-exclamation-triangle"></i> Panel de Incidencias</a>
+      <a href="#nueva" class="nav-item"><i class="fas fa-plus-circle"></i> Registrar Incidencia</a>
+      <a href="#dashboard" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard Inteligente</a>
+      <a href="#problemas" class="nav-item"><i class="fas fa-bug"></i> Gestión de Problemas</a>
+      <a href="#reportes" class="nav-item"><i class="fas fa-file-export"></i> Reportes</a>
+      <a href="#config" class="nav-item"><i class="fas fa-cog"></i> Configuración</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 id="page-title">Inicio del Sistema</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="notifications">
+          <i class="fas fa-bell"></i>
+          <span class="badge" id="notif-count">3</span>
+        </div>
+        <div class="user-info">
+          <span id="current-time"></span> | 
+          <strong>Administrador</strong> <i class="fas fa-user-circle"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PANELS -->
+    <div id="inicio" class="panel active">
+      <div class="kpi-grid">
+        <div class="kpi-card"><h3>Incidencias Activas</h3><span id="kpi-activas">0</span></div>
+        <div class="kpi-card"><h3>MTTR (horas)</h3><span id="kpi-mttr">0</span></div>
+        <div class="kpi-card"><h3>MTBF (días)</h3><span id="kpi-mtbf">0</span></div>
+        <div class="kpi-card"><h3>Disponibilidad</h3><span id="kpi-disponibilidad">99.9%</span></div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-container">
+          <canvas id="chartPrioridad"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="chartServicio"></canvas>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-container full">
+          <canvas id="chartTendencia"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div id="incidencias" class="panel">
+      <div class="table-controls">
+        <input type="text" id="search-incidencia" placeholder="Buscar incidencia..."/>
+        <select id="filter-estado"><option value="">Todos los estados</option></select>
+        <select id="filter-prioridad"><option value="">Todas las prioridades</option></select>
+      </div>
+      <table id="tabla-incidencias">
+        <thead>
+          <tr>
+            <th>ID</th><th>Fecha</th><th>Título</th><th>Servicio</th><th>Prioridad</th><th>Estado</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="pagination">
+        <button id="prev-page"><<</button>
+        <span id="page-info"></span>
+        <button id="next-page">>></button>
+      </div>
+    </div>
+
+    <div id="nueva" class="panel">
+      <div class="form-container">
+        <h2>Registrar Nueva Incidencia</h2>
+        <form id="form-incidencia">
+          <label>Título *</label>
+          <input type="text" name="titulo" required/>
+
+          <label>Descripción *</label>
+          <textarea name="descripcion" rows="5" required></textarea>
+
+          <label>Servicio afectado *</label>
+          <select name="servicio" required>
+            <option value="">Seleccionar...</option>
+            <option>MotorIA</option><option>API Diagnóstico</option><option>Base de Datos</option>
+            <option>Módulo Pacientes</option><option>Servidor Backend</option>
+          </select>
+
+          <label>Imagen adjunta (opcional)</label>
+          <input type="file" accept="image/*" name="imagen"/>
+
+          <div class="ia-suggestions" id="ia-suggestions"></div>
+
+          <button type="submit">Registrar Incidencia</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="problemas" class="panel">
+      <h2>Problemas Recurrentes Detectados por IA</h2>
+      <div id="lista-problemas"></div>
+    </div>
+
+    <div id="reportes" class="panel">
+      <h2>Reportes y Exportaciones</h2>
+      <button id="export-csv">Descargar CSV (filtrado actual)</button>
+      <div id="resumen-reportes"></div>
+    </div>
+
+    <div id="config" class="panel">
+      <h2>Configuración del Sistema</h2>
+      <p>Aquí irían opciones avanzadas, integración API, etc.</p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
