@@ -1,109 +1,171 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sistema Integral de Gestión IA - ITIL & PMBOK v3.0 FINAL</title>
-  <link rel="stylesheet" href="styles.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Control IA | ITIL 4 + PMBOK 7</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="claro">
-  <!-- Barra de título Windows-like -->
-  <div class="title-bar" id="titleBar">
-    <div class="title-bar-text"><i class="fas fa-brain"></i> Sistema Integral de Gestión de Proyectos IA - ITIL & PMBOK v3.0</div>
-    <div class="title-bar-controls">
-      <button onclick="toggleTema()" title="Tema claro/oscuro"><i class="fas fa-moon"></i></button>
-      <button onclick="iniciarModoPresentacion()" title="Modo Presentación"><i class="fas fa-expand"></i></button>
-      <button class="minimize">_</button>
-      <button class="maximize">□</button>
-      <button class="close">×</button>
+<body>
+    <div class="theme-toggle">
+        <i class="fas fa-moon"></i>
     </div>
-  </div>
 
-  <!-- Menú principal completo -->
-  <div class="menu-bar">
-    <ul>
-      <li>Archivo ▾
-        <ul>
-          <li onclick="exportarReporte()">Generar Reporte Semanal</li>
-          <li onclick="abrirCalculadoras()">Calculadoras IA</li>
-          <li onclick="abrirPlantillas()">Biblioteca de Plantillas</li>
-          <li>─</li>
-          <li>Salir</li>
-        </ul>
-      </li>
-      <li>Proyecto ▾
-        <ul>
-          <li onclick="abrirDashboard()">Dashboard Ejecutivo</li>
-          <li onclick="abrirGantt()">Diagrama de Gantt</li>
-          <li onclick="abrirBurndown()">Burndown Chart</li>
-          <li onclick="abrirCurvaS()">Curva S (Valor Ganado)</li>
-          <li onclick="abrirTimelineUnificada()">Línea de Tiempo Unificada</li>
-        </ul>
-      </li>
-      <li>ITIL ▾
-        <ul>
-          <li onclick="abrirIncidentes()">Incidentes</li>
-          <li onclick="abrirCambios()">Gestión de Cambios</li>
-          <li onclick="abrirProblemas()">Gestión de Problemas</li>
-          <li onclick="abrirSLA()">Cumplimiento SLA</li>
-        </ul>
-      </li>
-      <li>Automatización ▾
-        <ul>
-          <li onclick="abrirCentroAutomatizacion()">Centro de Automatización IA</li>
-          <li onclick="abrirSimuladorEscenarios()">¿Qué pasa si...?</li>
-          <li onclick="iniciarDemo()">Demo Automática Completa</li>
-        </ul>
-      </li>
-      <li>Gráficos ▾
-        <ul><li onclick="abrirCentroGraficos()">Centro de Gráficos (30+ tipos)</li></ul>
-      </li>
-      <li>Herramientas ▾
-        <ul>
-          <li onclick="abrirBusquedaGlobal()">Búsqueda Global (Ctrl+K)</li>
-          <li onclick="abrirTutorial()">Tutorial Interactivo</li>
-          <li onclick="abrirGlosario()">Glosario Completo</li>
-        </ul>
-      </li>
-      <li>Ayuda ▾
-        <ul>
-          <li onclick="abrirAsistente()">Asistente Inteligente</li>
-          <li>Acerca de v3.0</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+    <div class="container">
+        <header class="main-header">
+            <h1><i class="fas fa-brain"></i> Centro de Control de Inteligencia Artificial</h1>
+            <p class="subtitle">Gestión Integrada ITIL 4 + PMBOK 7 | Actualización en tiempo real</p>
+            <div class="last-update">Última actualización: <span id="update-time">--</span></div>
+        </header>
 
-  <!-- Sidebar mejorado -->
-  <div class="sidebar">
-    <h3><i class="fas fa-rocket"></i> Navegación</h3>
-    <button onclick="abrirDashboard()"><i class="fas fa-home"></i> Dashboard Ejecutivo</button>
-    <button onclick="abrirCentroGraficos()"><i class="fas fa-chart-pie"></i> 30+ Gráficos</button>
-    <button onclick="abrirCentroAutomatizacion()"><i class="fas fa-robot"></i> Automatización IA</button>
-    <button onclick="abrirIncidentes()"><i class="fas fa-exclamation-triangle"></i> Incidentes ITIL</button>
-    <button onclick="abrirAsistente()"><i class="fas fa-brain"></i> Asistente IA</button>
-    <button onclick="iniciarDemo()"><i class="fas fa-play-circle"></i> Demo Automática</button>
-    <button onclick="iniciarModoPresentacion()"><i class="fas fa-tv"></i> Modo Presentación</button>
-  </div>
+        <!-- Paneles Principales -->
+        <div class="dashboard-grid">
 
-  <div id="workspace"></div>
+            <!-- Panel 1: KPIs Principales -->
+            <div class="panel kpi-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-tachometer-alt"></i> KPIs Principales</h3>
+                    <i class="fas fa-expand panel-toggle"></i>
+                </div>
+                <div class="panel-body">
+                    <div class="kpi-grid">
+                        <div class="kpi-card bg-primary">
+                            <div class="kpi-icon"><i class="fas fa-project-diagram"></i></div>
+                            <div class="kpi-value" id="proyectos-activos">0</div>
+                            <div class="kpi-label">Proyectos Activos</div>
+                        </div>
+                        <div class="kpi-card bg-danger">
+                            <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="kpi-value" id="incidentes-criticos">0</div>
+                            <div class="kpi-label">Incidentes Críticos (P1)</div>
+                        </div>
+                        <div class="kpi-card bg-success">
+                            <div class="kpi-icon"><i class="fas fa-robot"></i></div>
+                            <div class="kpi-value" id="modelos-produccion">0</div>
+                            <div class="kpi-label">Modelos en Producción</div>
+                        </div>
+                        <div class="kpi-card bg-warning">
+                            <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+                            <div class="kpi-value" id="sla-cumplimiento">0%</div>
+                            <div class="kpi-label">Cumplimiento SLA (ITIL)</div>
+                        </div>
+                        <div class="kpi-card bg-info">
+                            <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="kpi-value" id="roi-promedio">0%</div>
+                            <div class="kpi-label">ROI Promedio Proyectos</div>
+                        </div>
+                        <div class="kpi-card bg-purple">
+                            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+                            <div class="kpi-value" id="equipo-asignado">0</div>
+                            <div class="kpi-label">Miembros Equipo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  <!-- Barra de estado avanzada -->
-  <div class="status-bar">
-    <span><i class="fas fa-project-diagram"></i> Proyectos: <strong id="proyectos-count">0</strong></span>
-    <span><i class="fas fa-bell"></i> Incidentes abiertos: <strong id="incidentes-abiertos">0</strong></span>
-    <span><i class="fas fa-clock"></i> <span id="reloj"></span></span>
-    <span id="notif-status"><i class="fas fa-check-circle"></i> Sistema v3.0 - 100% Funcional</span>
-  </div>
+            <!-- Panel 2: Estado Proyectos PMBOK -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-tasks"></i> Estado de Proyectos (PMBOK 7)</h3>
+                    <i class="fas fa-expand panel-toggle"></i>
+                </div>
+                <div class="panel-body">
+                    <canvas id="proyectosChart"></canvas>
+                </div>
+            </div>
 
-  <div id="toast-container"></div>
-  <div id="presentacion-overlay" style="display:none;"></div>
+            <!-- Panel 3: Gestión de Servicio ITIL -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-headset"></i> Incidentes y Problemas (ITIL 4)</h3>
+                    <i class="fas fa-expand panel-toggle"></i>
+                </div>
+                <div class="panel-body">
+                    <canvas id="itilChart"></canvas>
+                </div>
+            </div>
 
-  <script src="script.js"></script>
+            <!-- Panel 4: Rendimiento Modelos IA -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-microchip"></i> Rendimiento de Modelos ML</h3>
+                    <i class="fas fa-expand panel-toggle"></i>
+                </div>
+                <div class="panel-body">
+                    <canvas id="precisionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Panel 5: Tabla de Proyectos Detallada -->
+            <div class="panel fullscreen-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-table"></i> Detalle de Proyectos</h3>
+                    <i class="fas fa-expand panel-toggle"></i>
+                </div>
+                <div class="panel-body">
+                    <div class="table-container">
+                        <table id="proyectos-table">
+                            <thead>
+                                <tr>
+                                    <th>Proyecto</th>
+                                    <th>Estado</th>
+                                    <th>Precision</th>
+                                    <th>Incidentes</th>
+                                    <th>Entregables OK</th>
+                                    <th>Presupuesto</th>
+                                    <th>Riesgo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 6: Alertas Activas -->
+            <div class="panel alerts-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-bell"></i> Alertas Críticas Activas</h3>
+                    <i class="fas fa-expand panel-toggle"></i>
+                </div>
+                <div class="panel-body">
+                    <div id="alertas-lista">
+                        <p class="no-alerts">No hay alertas críticas en este momento</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 7: Timeline de Entregas -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-calendar-alt"></i> Timeline de Entregables (PMBOK)</h3>
+                    <i class="fas fa-expand panel-toggle"></i>
+                </div>
+                <div class="panel-body">
+                    <canvas id="timelineChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Panel 8: Drift de Modelos -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-exchange-alt"></i> Data Drift Detection</h3>
+                    <i class="fas fa-expand panel-toggle"></i>
+                </div>
+                <div class="panel-body">
+                    <canvas id="driftChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Centro de Control IA v2.0 © 2025 | ITIL 4 + PMBOK 7 + MLOps Integrado</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
