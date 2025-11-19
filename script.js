@@ -2514,10 +2514,201 @@ function renderKPIDashboard() {
 
 function renderReleasesTimeline() {
   const container = document.getElementById('releases-timeline');
-  
+
   const releases = [
     {
       version: "v1.0 - MVP",
       date: "15 Marzo 2025",
       status: "Completado",
-      description: "
+      description: "Lanzamiento del producto mínimo viable con funcionalidades core de diagnóstico asistido por IA"
+    },
+    {
+      version: "v1.5 - Módulo IA Avanzado",
+      date: "20 Junio 2025",
+      status: "Completado",
+      description: "Integración del motor de inteligencia artificial para predicción de fallos y diagnóstico automático"
+    },
+    {
+      version: "v2.0 - Integración Total",
+      date: "15 Septiembre 2025",
+      status: "En Progreso",
+      description: "Integración completa con sistemas hospitalarios existentes (HIS, RIS, PACS) y cumplimiento normativo"
+    },
+    {
+      version: "v2.5 - Mobile & Cloud",
+      date: "30 Noviembre 2025",
+      status: "Planificado",
+      description: "Aplicación móvil para médicos y pacientes + migración completa a arquitectura cloud-native"
+    },
+    {
+      version: "v3.0 - IA Predictiva",
+      date: "28 Febrero 2026",
+      status: "Planificado",
+      description: "Implementación de modelos predictivos para mantenimiento proactivo y optimización de recursos"
+    }
+  ];
+
+  container.innerHTML = `
+    <div class="timeline-line"></div>
+    ${releases.map((release, index) => `
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <h4 class="timeline-title">${release.version}</h4>
+          <p class="timeline-date"><i class="fas fa-calendar-alt"></i> ${release.date}</p>
+          <p class="timeline-desc">${release.description}</p>
+          <span class="status-badge status-${release.status.toLowerCase().replace(/ /g, '-')}">${release.status}</span>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+// ==================== LIVE FEED & NOTIFICATIONS ====================
+function addToLiveFeed(message, isAlert = false) {
+  const feed = document.getElementById('live-feed');
+  const timestamp = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  const item = document.createElement('div');
+  item.className = `feed-item ${isAlert ? 'alert' : ''}`;
+  item.innerHTML = `
+    <div class="feed-icon">${isAlert ? '⚠️' : 'ℹ️'}</div>
+    <div class="feed-content">
+      <div class="feed-message">${message}</div>
+      <div class="feed-time">${timestamp}</div>
+    </div>
+  `;
+
+  feed.prepend(item);
+
+  // Mantener solo los últimos 15 mensajes
+  if (feed.children.length > 15) {
+    feed.removeChild(feed.lastChild);
+  }
+}
+
+function showNotification(message) {
+  STATE.notificationCount++;
+  document.getElementById('notification-dot').style.display = 'block';
+  document.getElementById('notification-btn').title = `${STATE.notificationCount} notificaciones nuevas`;
+
+  // Aquí podrías integrar un toast real (Toastify, SweetAlert2, etc.)
+  console.log('🔔 Notificación:', message);
+}
+
+function playAlert() {
+  const audio = document.getElementById('alert-sound');
+  audio.currentTime = 0;
+  audio.play().catch(() => {});
+}
+
+// ==================== MODALES ====================
+function showIncidentDetail(incidentId) {
+  const incident = STATE.incidents.find(i => i.id === incidentId);
+  if (!incident) return;
+
+  const modalBody = document.getElementById('modal-incident-body');
+  modalBody.innerHTML = `
+    <div class="incident-detail">
+      <h3>${incident.title}</h3>
+      <div class="detail-grid">
+        <div><strong>ID:</strong> ${incident.id}</div>
+        <div><strong>Fecha:</strong> ${incident.date} ${incident.time}</div>
+        <div><strong>Categoría:</strong> ${incident.category}</div>
+        <div><strong>Prioridad:</strong> <span class="priority-badge priority-${incident.priority.toLowerCase()}">${incident.priority}</span></div>
+        <div><strong>Impacto:</strong> ${incident.impact}</div>
+        <div><strong>Urgencia:</strong> ${incident.urgency}</div>
+        <div><strong>Estado:</strong> <span class="status-badge status-${incident.status.toLowerCase().replace(/ /g, '-')}">${incident.status}</span></div>
+        <div><strong>Grupo Asignado:</strong> ${incident.assignedGroup}</div>
+        <div><strong>SLA:</strong> <span style="color: ${incident.sla ? '#10b981' : '#ef4444'};">${incident.sla ? 'Cumplido ✓' : 'Incumplido ✗'}</span></div>
+        <div><strong>MTTR:</strong> ${incident.mttr}h</div>
+      </div>
+      <div class="detail-section">
+        <h4>Descripción</h4>
+        <p>${incident.description}</p>
+      </div>
+      ${incident.resolution ? `<div class="detail-section"><h4>Resolución</h4><p>${incident.resolution}</p></div>` : ''}
+    </div>
+  `;
+
+  document.getElementById('modal-incident').classList.add('active');
+}
+
+// ==================== NAVEGACIÓN Y EVENTOS ====================
+function setupNavigation() {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+
+      const view = item.getAttribute('data-view');
+      document.querySelectorAll('.view-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(view).classList.add('active');
+      document.getElementById('page-title').textContent = item.querySelector('span').textContent.trim();
+    });
+  });
+}
+
+function setupEventListeners() {
+  // Nueva incidencia
+  document.getElementById('btn-new-incident')?.addEventListener('click', () => {
+    document.getElementById('modal-new-incident').classList.add('active');
+  });
+
+  document.getElementById('btn-submit-incident')?.addEventListener('click', () => {
+    const title = document.getElementById('incident-title').value.trim();
+    if (!title) return alert('El título es obligatorio');
+
+    const impact = document.getElementById('incident-impact').value;
+    const urgency = document.getElementById('incident-urgency').value;
+    const priority = calculatePriority(impact, urgency);
+
+    generateAutoIncident();
+    document.getElementById('modal-new-incident').classList.remove('active');
+    document.getElementById('form-new-incident').reset();
+    updateDashboard();
+    renderIncidentsTable();
+  });
+
+  // Cerrar modales
+  document.querySelectorAll('.modal-close, .modal').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target === el || el.classList.contains('modal-close')) {
+        el.closest('.modal').classList.remove('active');
+      }
+    });
+  });
+
+  // Cerrar modal con Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    }
+  });
+}
+
+// ==================== AUTO-UPDATES ====================
+function startAutoUpdates() {
+  // Generar incidencias automáticas cada cierto tiempo
+  setInterval(() => {
+    if (Math.random() < 0.35) { // ~35% probabilidad cada 15 segundos
+      generateAutoIncident();
+      updateDashboard();
+      renderIncidentsTable();
+      createAllCharts();
+    }
+  }, 15000);
+
+  // Actualizar reloj en vivo
+  setInterval(() => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    // Podrías añadir un elemento de reloj si lo deseas
+  }, 1000);
+}
+
+// ==================== INICIO ====================
+console.log('%c🚀 NEXUS Pro - Sistema Integrado ITIL v4 + PMBOK 7', 'color: #0066cc; font-size: 16px; font-weight: bold;');
+console.log('%cSistema cargado correctamente', 'color: #28a745; font-size: 14px;');
