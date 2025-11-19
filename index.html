@@ -3,139 +3,135 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SIGIO - Sistema Inteligente de Gestión de Incidencias</title>
+  <title>SIGIO v6.0 - Sistema Inteligente de Gestión de Incidencias</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="https://cdn.jsdelivr.net/npm/chart.js"></link>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <h2>SIGIO</h2>
-      <p>Sistema Inteligente de Gestión</p>
+      <h2><i class="fas fa-brain-circuit"></i> SIGIO</h2>
+      <p>Sistema Inteligente v6.0</p>
     </div>
     <nav class="sidebar-nav">
-      <a href="#inicio" class="nav-item active"><i class="fas fa-home"></i> Inicio</a>
-      <a href="#incidencias" class="nav-item"><i class="fas fa-exclamation-triangle"></i> Panel de Incidencias</a>
-      <a href="#nueva" class="nav-item"><i class="fas fa-plus-circle"></i> Registrar Incidencia</a>
-      <a href="#dashboard" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard Inteligente</a>
-      <a href="#problemas" class="nav-item"><i class="fas fa-bug"></i> Gestión de Problemas</a>
+      <a href="#inicio" class="nav-item active"><i class="fas fa-home"></i> Dashboard 3×3</a>
+      <a href="#incidencias" class="nav-item"><i class="fas fa-exclamation-triangle"></i> Incidencias</a>
+      <a href="#nueva" class="nav-item"><i class="fas fa-plus-circle"></i> Nueva Incidencia</a>
+      <a href="#problemas" class="nav-item"><i class="fas fa-bug"></i> Gestión de Problemas <span id="problemas-badge" class="badge">0</span></a>
+      <a href="#live" class="nav-item"><i class="fas fa-broadcast-tower"></i> Actividad en Vivo</a>
       <a href="#reportes" class="nav-item"><i class="fas fa-file-export"></i> Reportes</a>
-      <a href="#config" class="nav-item"><i class="fas fa-cog"></i> Configuración</a>
     </nav>
   </aside>
 
   <!-- MAIN CONTENT -->
   <main class="main-content">
-    <!-- TOPBAR -->
     <header class="topbar">
-      <div class="topbar-left">
-        <h1 id="page-title">Inicio del Sistema</h1>
-      </div>
+      <h1 id="page-title">Dashboard Inteligente 3×3</h1>
       <div class="topbar-right">
-        <div class="notifications">
+        <div class="notifications" id="notifications">
           <i class="fas fa-bell"></i>
-          <span class="badge" id="notif-count">3</span>
+          <span class="badge pulse" id="notif-count">0</span>
         </div>
-        <div class="user-info">
-          <span id="current-time"></span> | 
-          <strong>Administrador</strong> <i class="fas fa-user-circle"></i>
-        </div>
+        <span class="live-dot"></span> <strong>EN VIVO</strong> | <span id="current-time"></span>
       </div>
     </header>
 
-    <!-- PANELS -->
+    <!-- DASHBOARD 3x3 -->
     <div id="inicio" class="panel active">
-      <div class="kpi-grid">
-        <div class="kpi-card"><h3>Incidencias Activas</h3><span id="kpi-activas">0</span></div>
-        <div class="kpi-card"><h3>MTTR (horas)</h3><span id="kpi-mttr">0</span></div>
-        <div class="kpi-card"><h3>MTBF (días)</h3><span id="kpi-mtbf">0</span></div>
-        <div class="kpi-card"><h3>Disponibilidad</h3><span id="kpi-disponibilidad">99.9%</span></div>
+      <div class="grid-3x3">
+        <div class="chart-card"><canvas id="g1"></canvas><small>Incidencias por Prioridad</small></div>
+        <div class="chart-card"><canvas id="g2"></canvas><small>Top Servicios</small></div>
+        <div class="chart-card"><canvas id="g3"></canvas><small>Tendencia 30 Días</small></div>
+        <div class="chart-card"><canvas id="g4"></canvas><small>SLA por Servicio</small></div>
+        <div class="chart-card"><canvas id="g5"></canvas><small>MTTR por Equipo</small></div>
+        <div class="chart-card"><canvas id="g6"></canvas><small>Predicción IA</small></div>
+        <div class="chart-card"><canvas id="g7"></canvas><small>Estado del Sistema</small></div>
+        <div class="chart-card"><canvas id="g8"></canvas><small>Por Hora del Día</small></div>
+        <div class="chart-card"><canvas id="g9"></canvas><small>Problemas vs Resueltos</small></div>
       </div>
-
-      <div class="charts-row">
-        <div class="chart-container">
-          <canvas id="chartPrioridad"></canvas>
-        </div>
-        <div class="chart-container">
-          <canvas id="chartServicio"></canvas>
-        </div>
-      </div>
-
-      <div class="charts-row">
-        <div class="chart-container full">
-          <canvas id="chartTendencia"></canvas>
-        </div>
+      <div class="kpi-bar">
+        <div><strong>Activas:</strong> <span id="kpi-activas">0</span></div>
+        <div><strong>Críticas:</strong> <span id="kpi-criticas">0</span></div>
+        <div><strong>SLA:</strong> <span id="kpi-sla">99.2%</span></div>
+        <div><strong>MTTR:</strong> <span id="kpi-mttr">2.4h</span></div>
       </div>
     </div>
 
+    <!-- INCIDENCIAS -->
     <div id="incidencias" class="panel">
       <div class="table-controls">
-        <input type="text" id="search-incidencia" placeholder="Buscar incidencia..."/>
-        <select id="filter-estado"><option value="">Todos los estados</option></select>
-        <select id="filter-prioridad"><option value="">Todas las prioridades</option></select>
+        <input type="text" id="search-incidencia" placeholder="Buscar por ID, título o servicio..." />
+        <button id="export-csv">Exportar CSV</button>
+        <button id="export-pdf">Exportar PDF</button>
       </div>
       <table id="tabla-incidencias">
         <thead>
           <tr>
-            <th>ID</th><th>Fecha</th><th>Título</th><th>Servicio</th><th>Prioridad</th><th>Estado</th><th>Acciones</th>
+            <th>ID</th><th>Fecha</th><th>Título</th><th>Servicio</th><th>Prioridad</th><th>Estado</th><th>Asignado</th><th>Acciones</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
-      <div class="pagination">
-        <button id="prev-page"><<</button>
-        <span id="page-info"></span>
-        <button id="next-page">>></button>
-      </div>
     </div>
 
+    <!-- NUEVA INCIDENCIA -->
     <div id="nueva" class="panel">
       <div class="form-container">
         <h2>Registrar Nueva Incidencia</h2>
         <form id="form-incidencia">
           <label>Título *</label>
-          <input type="text" name="titulo" required/>
-
+          <input type="text" name="titulo" required />
           <label>Descripción *</label>
           <textarea name="descripcion" rows="5" required></textarea>
-
           <label>Servicio afectado *</label>
           <select name="servicio" required>
             <option value="">Seleccionar...</option>
             <option>MotorIA</option><option>API Diagnóstico</option><option>Base de Datos</option>
             <option>Módulo Pacientes</option><option>Servidor Backend</option>
           </select>
-
-          <label>Imagen adjunta (opcional)</label>
-          <input type="file" accept="image/*" name="imagen"/>
-
           <div class="ia-suggestions" id="ia-suggestions"></div>
-
           <button type="submit">Registrar Incidencia</button>
         </form>
       </div>
     </div>
 
+    <!-- GESTIÓN DE PROBLEMAS -->
     <div id="problemas" class="panel">
-      <h2>Problemas Recurrentes Detectados por IA</h2>
+      <h2>Gestión de Problemas - ITIL Problem Management</h2>
       <div id="lista-problemas"></div>
     </div>
 
-    <div id="reportes" class="panel">
-      <h2>Reportes y Exportaciones</h2>
-      <button id="export-csv">Descargar CSV (filtrado actual)</button>
-      <div id="resumen-reportes"></div>
+    <!-- ACTIVIDAD EN VIVO -->
+    <div id="live" class="panel">
+      <h2>Actividad del Sistema en Tiempo Real</h2>
+      <div id="live-feed"></div>
     </div>
 
-    <div id="config" class="panel">
-      <h2>Configuración del Sistema</h2>
-      <p>Aquí irían opciones avanzadas, integración API, etc.</p>
+    <!-- REPORTES -->
+    <div id="reportes" class="panel">
+      <h2>Reportes y Exportaciones</h2>
+      <button id="export-full">Descargar Reporte Completo</button>
+    </div>
+
+    <!-- MODAL DETALLE INCIDENCIA -->
+    <div id="modal-incidencia" class="modal">
+      <div class="modal-content">
+        <span class="close">×</span>
+        <h2>Detalle de Incidencia - ITIL + PMBOK</h2>
+        <div id="modal-body"></div>
+        <div class="modal-actions">
+          <button id="btn-cerrar">Cerrar Incidencia</button>
+          <button id="btn-problema">Crear Problema</button>
+        </div>
+      </div>
     </div>
   </main>
 
+  <audio id="alert-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-tone-1054.mp3" preload="auto"></audio>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
