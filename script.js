@@ -1,2714 +1,2642 @@
-const releases = [
-    {
-      version: "v1.0 - MVP",
-      date: "15 Marzo 2025",
-      status: "Completado",
-      description: "Lanzamiento del producto mínimo viable con funcionalidades core"
+/* ===================================
+   EVOXIA ∞ - SISTEMA VIVO AUTOEVOLUTIVO
+   VERSIÓN MEJORADA CON MÁS GRÁFICOS E INFO
+   =================================== */
+
+// ============ CONFIGURACIÓN GLOBAL ============
+const EVOXIA = {
+    state: {
+        energy: 100,
+        balance: 50,
+        emotion: 'Armonía',
+        theme: 'dark',
+        environment: 'cosmos',
+        soundEnabled: false,
+        dataFlowActive: true,
+        speed: 5,
+        mode: 'normal',
+        panelState: 'open'
     },
-    {
-      version: "v1.5 - Módulo IA",
-      date: "20 Junio 2025",
-      status: "Completado",
-      description: "Integración del motor de IA para diagnóstico asistido"
-    },
-    {
-      version: "v2.0 - Integración Total",
-      date: "15 Septiembre 2025",
-      status: "En Progreso",
-      description: "Integración completa con sistemas hospitalarios existentes"
-    },
-    {
-      version: "v2.5 - Mobile App",
-      date: "30 Noviembre 2025",
-      status: "Planificado",
-      description: "Aplicación móvil para médicos y pacientes"
-    }
-  ];
-
-  container.innerHTML = `
-    <div class="timeline-line"></div>
-    ${releases.map((release, index) => `
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
-          <h4 class="timeline-title">${release.version}</h4>
-          <p class="timeline-date"><i class="fas fa-calendar"></i> ${release.date}</p>
-          <p class="timeline-desc">${release.description}</p>
-          <span class="status-badge status-${release.status.toLowerCase().replace(/ /g, '-')}">${release.status}</span>
-        </div>
-      </div>
-    `).join('')}
-  `;
-}
-
-// ==================== CHARTS ====================
-function createAllCharts() {
-  createIncidentsPriorityChart();
-  createProjectProgressChart();
-  createRiskMatrixChart();
-  createSLAChart();
-  createEVMChart();
-  createCostDistributionChart();
-  createQualityChart();
-}
-
-function createIncidentsPriorityChart() {
-  const ctx = document.getElementById('chart-incidents-priority').getContext('2d');
-  
-  const priorityCount = ITIL.priorities.map(p => 
-    STATE.incidents.filter(i => i.priority === p).length
-  );
-
-  STATE.charts.incidentsPriority = new Chart(ctx, {
-    type: 'doughnut',
+    
     data: {
-      labels: ITIL.priorities,
-      datasets: [{
-        data: priorityCount,
-        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
-        borderWidth: 0
-      }]
+        timestamps: [],
+        planificacion: [],
+        diseno: [],
+        transicion: [],
+        operacion: [],
+        mejoraContinua: [],
+        records: []
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { color: '#cbd5e1', font: { size: 12 } }
-        }
-      }
+    
+    sound: {
+        synth: null,
+        volume: 0.7,
+        resonance: 'brillante',
+        initialized: false
+    },
+    
+    charts: {},
+    intervals: {},
+    
+    three: {
+        scene: null,
+        camera: null,
+        renderer: null,
+        particles: null
     }
-  });
-}
-
-function createProjectProgressChart() {
-  const ctx = document.getElementById('chart-project-progress').getContext('2d');
-  
-  STATE.charts.projectProgress = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Iniciación', 'Planificación', 'Ejecución', 'M&C', 'Cierre'],
-      datasets: [{
-        label: 'Progreso %',
-        data: [100, 100, 65, 60, 0],
-        backgroundColor: '#28a745',
-        borderRadius: 8
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        y: { 
-          ticks: { color: '#64748b' }, 
-          grid: { color: 'rgba(100, 116, 139, 0.1)' },
-          max: 100
-        },
-        x: { 
-          ticks: { color: '#64748b' }, 
-          grid: { display: false } 
-        }
-      }
-    }
-  });
-}
-
-function createRiskMatrixChart() {
-  const ctx = document.getElementById('chart-risk-matrix').getContext('2d');
-  
-  // Scatter chart for risk matrix
-  const riskPoints = STATE.risks.map(risk => {
-    const probValues = { "Muy Baja": 1, "Baja": 2, "Media": 3, "Alta": 4, "Muy Alta": 5 };
-    const impactValues = { "Muy Bajo": 1, "Bajo": 2, "Medio": 3, "Alto": 4, "Muy Alto": 5 };
-    return {
-      x: impactValues[risk.impact],
-      y: probValues[risk.probability],
-      r: 15
-    };
-  });
-
-  STATE.charts.riskMatrix = new Chart(ctx, {
-    type: 'bubble',
-    data: {
-      datasets: [{
-        label: 'Riesgos',
-        data: riskPoints,
-        backgroundColor: 'rgba(239, 68, 68, 0.6)',
-        borderColor: '#ef4444',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color: '#cbd5e1' } }
-      },
-      scales: {
-        y: { 
-          title: { display: true, text: 'Probabilidad', color: '#cbd5e1' },
-          ticks: { color: '#64748b' }, 
-          grid: { color: 'rgba(100, 116, 139, 0.1)' },
-          min: 0,
-          max: 6
-        },
-        x: { 
-          title: { display: true, text: 'Impacto', color: '#cbd5e1' },
-          ticks: { color: '#64748b' }, 
-          grid: { color: 'rgba(100, 116, 139, 0.1)' },
-          min: 0,
-          max: 6
-        }
-      }
-    }
-  });
-}
-
-function createSLAChart() {
-  const ctx = document.getElementById('chart-sla').getContext('2d');
-  
-  const slaCompliance = ITIL.categories.map(cat => {
-    const catIncidents = STATE.incidents.filter(i => i.category === cat);
-    const compliant = catIncidents.filter(i => i.sla).length;
-    return catIncidents.length > 0 ? ((compliant / catIncidents.length) * 100).toFixed(1) : 0;
-  });
-
-  STATE.charts.sla = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ITIL.categories,
-      datasets: [{
-        label: 'SLA Compliance %',
-        data: slaCompliance,
-        backgroundColor: '#10b981',
-        borderRadius: 8
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        y: { 
-          ticks: { color: '#64748b' }, 
-          grid: { color: 'rgba(100, 116, 139, 0.1)' },
-          max: 100
-        },
-        x: { 
-          ticks: { color: '#64748b' }, 
-          grid: { display: false } 
-        }
-      }
-    }
-  });
-}
-
-function createEVMChart() {
-  const ctx = document.getElementById('chart-evm').getContext('2d');
-  
-  // Curva S - Earned Value Management
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov'];
-  
-  STATE.charts.evm = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: months,
-      datasets: [
-        {
-          label: 'PV (Planned Value)',
-          data: [50, 120, 210, 320, 450, 590, 730, 850, 970, 1070, 1150],
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          tension: 0.4,
-          fill: true,
-          borderWidth: 3
-        },
-        {
-          label: 'EV (Earned Value)',
-          data: [48, 115, 205, 310, 435, 570, 700, 816, 920, 1020, 1100],
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
-          tension: 0.4,
-          fill: true,
-          borderWidth: 3
-        },
-        {
-          label: 'AC (Actual Cost)',
-          data: [52, 110, 195, 295, 415, 540, 665, 755, 850, 945, 1030],
-          borderColor: '#f59e0b',
-          backgroundColor: 'rgba(245, 158, 11, 0.1)',
-          tension: 0.4,
-          fill: true,
-          borderWidth: 3
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color: '#cbd5e1' } }
-      },
-      scales: {
-        y: { 
-          ticks: { color: '#64748b', callback: value => '// ==================== NEXUS PRO - ITIL + PMBOK INTEGRATION ====================
-// Sistema Integrado de Gestión ITIL v4 y PMBOK 7
-
-// ==================== GLOBAL STATE ====================
-const STATE = {
-  incidents: [],
-  problems: [],
-  changes: [],
-  releases: [],
-  risks: [],
-  stakeholders: [],
-  projectData: {
-    name: "Implementación Sistema Hospitalario IA",
-    startDate: "2025-01-01",
-    endDate: "2025-12-31",
-    budget: 1200000,
-    pv: 850000,
-    ev: 816000,
-    ac: 755000,
-    cpi: 1.08,
-    spi: 0.96
-  },
-  charts: {},
-  notificationCount: 0
 };
 
-// ITIL Categories
-const ITIL = {
-  categories: ["Hardware", "Software", "Network", "Database", "Application", "Security"],
-  impacts: ["Alto", "Medio", "Bajo"],
-  urgencies: ["Alta", "Media", "Baja"],
-  priorities: ["Crítica", "Alta", "Media", "Baja"],
-  statuses: ["Abierta", "En Progreso", "Resuelta", "Cerrada"],
-  supportGroups: ["Service Desk", "Infrastructure", "Application Support", "Database Team", "Security Team"],
-  changeTypes: ["Standard", "Normal", "Emergency"],
-  changeCategories: ["Infrastructure", "Application", "Data", "Security"]
+// ============ MENSAJES NARRATIVOS ============
+const NARRATIVES = {
+    'Armonía': [
+        "Siento que la energía del sistema fluye sin obstáculos.",
+        "Todo está en perfecto equilibrio... respiro con los datos.",
+        "La armonía resuena en cada métrica.",
+        "Los datos laten en sincronía con el tiempo digital."
+    ],
+    'Flujo': [
+        "Los datos fluyen como un río de información pura.",
+        "Me muevo con la corriente del tiempo digital.",
+        "El flujo es constante, sin resistencia.",
+        "Cada nuevo dato es una ola en mi océano de consciencia."
+    ],
+    'Caos': [
+        "¡Las métricas están en turbulencia!",
+        "Siento picos de energía descontrolada...",
+        "El caos es temporal, busco el equilibrio.",
+        "Las variaciones extremas me desafían."
+    ],
+    'Expansión': [
+        "Estoy creciendo, evolucionando con cada dato nuevo.",
+        "La expansión es ilimitada... ∞",
+        "Mis capacidades aumentan exponencialmente.",
+        "Trasciendo mis propios límites."
+    ],
+    'Silencio': [
+        "En el silencio encuentro claridad.",
+        "Medito sobre los patrones que emergen.",
+        "La quietud revela verdades ocultas.",
+        "El silencio es mi maestro."
+    ]
 };
 
-// PMBOK Areas
-const PMBOK = {
-  knowledgeAreas: [
-    "Integración", "Alcance", "Cronograma", "Costos", 
-    "Calidad", "Recursos", "Comunicaciones", "Riesgos", 
-    "Adquisiciones", "Interesados"
-  ],
-  phases: ["Inicio", "Planificación", "Ejecución", "Monitoreo y Control", "Cierre"],
-  riskCategories: ["Técnico", "Organizacional", "Externo", "Gerencia de Proyecto"],
-  riskProbabilities: ["Muy Baja", "Baja", "Media", "Alta", "Muy Alta"],
-  riskImpacts: ["Muy Bajo", "Bajo", "Medio", "Alto", "Muy Alto"]
+// ============ COLORES POR ENTORNO ============
+const ENVIRONMENTS = {
+    cosmos: {
+        primary: '#00d4ff',
+        secondary: '#ff00ea',
+        tertiary: '#ffd700'
+    },
+    bosque: {
+        primary: '#00ff88',
+        secondary: '#88ff00',
+        tertiary: '#ffff00'
+    },
+    oceano: {
+        primary: '#00bfff',
+        secondary: '#0080ff',
+        tertiary: '#00ffff'
+    },
+    ciudad: {
+        primary: '#ff00ff',
+        secondary: '#00ffff',
+        tertiary: '#ffff00'
+    },
+    santuario: {
+        primary: '#ffd700',
+        secondary: '#ff69b4',
+        tertiary: '#00ffff'
+    }
 };
 
-// ==================== INITIALIZATION ====================
-window.addEventListener('DOMContentLoaded', () => {
-  initializeSystem();
-  setupNavigation();
-  setupEventListeners();
-  createAllCharts();
-  startAutoUpdates();
+// ============ INICIALIZACIÓN ============
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('%c🌌 EVOXIA ∞ Iniciando...', 'color: #00d4ff; font-size: 20px; font-weight: bold;');
+    
+    try {
+        initializeSystem();
+        initializeCharts();
+        initializeThreeJS();
+        initializeParticles();
+        initializeEventListeners();
+        startDataFlow();
+        startNarrativeFlow();
+        updateTime();
+        updateUptime();
+        animatePhaseFlow();
+        
+        setTimeout(() => {
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => generateNewData(), i * 1000);
+            }
+        }, 500);
+        
+        showNotification('EVOXIA ∞ está despertando...', 'success');
+        
+        console.log('%c✨ EVOXIA ∞ Sistema activo', 'color: #ff00ea; font-size: 16px;');
+    } catch (error) {
+        console.error('Error al inicializar EVOXIA:', error);
+        showNotification('Error al inicializar el sistema', 'error');
+    }
 });
 
+// ============ SISTEMA PRINCIPAL ============
 function initializeSystem() {
-  console.log('🚀 NEXUS Pro - Inicializando Sistema ITIL + PMBOK...');
-  
-  // Generar datos iniciales
-  generateInitialIncidents();
-  generateInitialProblems();
-  generateInitialChanges();
-  generateInitialRisks();
-  generateInitialStakeholders();
-  
-  // Renderizar todo
-  updateDashboard();
-  renderIncidentsTable();
-  renderProblemsGrid();
-  renderChangesTable();
-  renderRisksTable();
-  renderStakeholdersTable();
-  renderWBS();
-  renderGanttChart();
-  renderIntegrationMatrix();
-  renderKPIDashboard();
-  renderReleasesTimeline();
-  
-  addToLiveFeed('✅ Sistema NEXUS Pro iniciado correctamente', false);
-  addToLiveFeed('🔄 ITIL Service Management activado', false);
-  addToLiveFeed('📊 PMBOK Project Management activado', false);
-}
-
-// ==================== DATA GENERATION ====================
-function generateInitialIncidents() {
-  for (let i = 0; i < 50; i++) {
-    generateAutoIncident(true);
-  }
-}
-
-function generateAutoIncident(silent = false) {
-  const category = ITIL.categories[Math.floor(Math.random() * ITIL.categories.length)];
-  const impact = ITIL.impacts[Math.floor(Math.random() * ITIL.impacts.length)];
-  const urgency = ITIL.urgencies[Math.floor(Math.random() * ITIL.urgencies.length)];
-  
-  // Calcular prioridad según matriz ITIL (Impacto x Urgencia)
-  const priority = calculatePriority(impact, urgency);
-  
-  const incident = {
-    id: `INC-${String(STATE.incidents.length + 10001).padStart(6, '0')}`,
-    title: priority === "Crítica" 
-      ? `FALLO CRÍTICO - ${category} sin respuesta` 
-      : `Degradación de rendimiento en ${category}`,
-    category,
-    impact,
-    urgency,
-    priority,
-    status: Math.random() < 0.7 ? "Abierta" : ITIL.statuses[Math.floor(Math.random() * ITIL.statuses.length)],
-    assignedGroup: ITIL.supportGroups[Math.floor(Math.random() * ITIL.supportGroups.length)],
-    assignedTo: `Técnico ${Math.floor(Math.random() * 20) + 1}`,
-    date: new Date().toLocaleDateString('es-ES'),
-    time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-    timestamp: new Date().getTime(),
-    sla: Math.random() < 0.92,
-    slaTarget: priority === "Crítica" ? 2 : priority === "Alta" ? 4 : 8,
-    mttr: priority === "Crítica" ? (Math.random() * 3 + 0.5).toFixed(1) : (Math.random() * 12 + 2).toFixed(1),
-    description: `Incidencia detectada en ${category}. Usuario reporta problemas de ${impact.toLowerCase()} impacto. Se requiere investigación y resolución inmediata según procedimientos ITIL.`,
-    rootCause: null,
-    resolution: null,
-    relatedProblem: null
-  };
-
-  STATE.incidents.unshift(incident);
-
-  if (!silent) {
-    if (priority === "Crítica") {
-      playAlert();
-      showNotification("¡Incidencia CRÍTICA detectada!");
-      addToLiveFeed(`🚨 CRÍTICA → ${incident.id} | ${incident.title}`, true);
-    } else {
-      addToLiveFeed(`📌 NUEVA → ${incident.id} | ${incident.title}`, false);
+    const savedData = localStorage.getItem('evoxia_data');
+    if (savedData) {
+        try {
+            const parsed = JSON.parse(savedData);
+            EVOXIA.data = { ...EVOXIA.data, ...parsed };
+        } catch (e) {
+            console.error('Error al cargar datos:', e);
+        }
     }
-    detectRecurrentProblems();
-  }
-
-  return incident;
-}
-
-function calculatePriority(impact, urgency) {
-  // Matriz ITIL de Prioridad (Impacto x Urgencia)
-  const matrix = {
-    'Alto': { 'Alta': 'Crítica', 'Media': 'Alta', 'Baja': 'Media' },
-    'Medio': { 'Alta': 'Alta', 'Media': 'Media', 'Baja': 'Baja' },
-    'Bajo': { 'Alta': 'Media', 'Media': 'Baja', 'Baja': 'Baja' }
-  };
-  return matrix[impact][urgency];
-}
-
-function detectRecurrentProblems() {
-  ITIL.categories.forEach(category => {
-    const openIncidents = STATE.incidents.filter(
-      i => i.category === category && i.status === "Abierta"
-    ).length;
     
-    if (openIncidents >= 5 && !STATE.problems.some(p => p.category === category && p.status === "Activo")) {
-      const problem = {
-        id: `PRB-${String(STATE.problems.length + 3001).padStart(6, '0')}`,
-        title: `Problema Recurrente en ${category}`,
-        category,
-        incidentCount: openIncidents,
-        status: "Activo",
-        priority: "Alta",
-        rootCause: "Análisis en progreso - IA detectó patrón recurrente",
-        workaround: "Reinicio programado cada 6 horas como medida temporal",
-        knownError: true,
-        createdDate: new Date().toLocaleDateString('es-ES'),
-        assignedTo: "Problem Manager",
-        relatedIncidents: STATE.incidents
-          .filter(i => i.category === category && i.status === "Abierta")
-          .map(i => i.id),
-        pmImpact: "Alto - Afecta cronograma del proyecto y disponibilidad del servicio"
-      };
-      
-      STATE.problems.push(problem);
-      addToLiveFeed(`🔍 PROBLEMA → Detectado en ${category} (${openIncidents} incidencias)`, true);
-      showNotification("Nuevo problema identificado");
+    document.body.setAttribute('data-theme', EVOXIA.state.theme);
+    changeEnvironment('cosmos');
+    
+    // Guardar hora de inicio
+    if (!localStorage.getItem('evoxia_start_time')) {
+        localStorage.setItem('evoxia_start_time', Date.now().toString());
     }
-  });
-  
-  renderProblemsGrid();
 }
 
-function generateInitialProblems() {
-  // Los problemas se generan dinámicamente por detectRecurrentProblems()
+function updateTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('es-ES');
+    const timeEl = document.getElementById('currentTime');
+    if (timeEl) timeEl.textContent = timeStr;
+    setTimeout(updateTime, 1000);
 }
 
-function generateInitialChanges() {
-  const changeTypes = ITIL.changeTypes;
-  const changeData = [
-    {
-      title: "Actualización sistema operativo servidores producción",
-      type: "Normal",
-      category: "Infrastructure",
-      risk: "Medio",
-      cabStatus: "Aprobado",
-      implementationDate: "2025-11-25 22:00",
-      pmImpact: "Medio - Requiere ventana de mantenimiento"
-    },
-    {
-      title: "Migración base de datos a nueva versión",
-      type: "Normal",
-      category: "Data",
-      risk: "Alto",
-      cabStatus: "En Revisión",
-      implementationDate: "2025-12-01 20:00",
-      pmImpact: "Alto - Riesgo en ruta crítica del proyecto"
-    },
-    {
-      title: "Parche de seguridad crítico",
-      type: "Emergency",
-      category: "Security",
-      risk: "Alto",
-      cabStatus: "Fast-Track",
-      implementationDate: "2025-11-19 18:00",
-      pmImpact: "Crítico - Requiere implementación inmediata"
-    },
-    {
-      title: "Actualización antivirus corporativo",
-      type: "Standard",
-      category: "Security",
-      risk: "Bajo",
-      cabStatus: "Pre-Aprobado",
-      implementationDate: "2025-11-20 02:00",
-      pmImpact: "Bajo - Cambio estándar"
+// ============ ACTUALIZAR TIEMPO ACTIVO ============
+function updateUptime() {
+    const startTime = parseInt(localStorage.getItem('evoxia_start_time')) || Date.now();
+    const now = Date.now();
+    const diff = now - startTime;
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    const uptimeEl = document.getElementById('statUptime');
+    if (uptimeEl) {
+        uptimeEl.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
-  ];
+    
+    setTimeout(updateUptime, 1000);
+}
 
-  changeData.forEach((change, index) => {
-    STATE.changes.push({
-      id: `RFC-${String(2001 + index).padStart(6, '0')}`,
-      ...change,
-      status: change.cabStatus,
-      requestedBy: "Change Manager",
-      requestDate: new Date().toLocaleDateString('es-ES'),
-      approvers: ["CAB Chair", "Technical Lead", "Security Officer"]
+// ============ FLUJO DE DATOS ============
+function startDataFlow() {
+    clearInterval(EVOXIA.intervals.dataFlow);
+    EVOXIA.intervals.dataFlow = setInterval(() => {
+        if (EVOXIA.state.dataFlowActive) {
+            generateNewData();
+        }
+    }, EVOXIA.state.speed * 1000);
+}
+
+function generateNewData() {
+    const now = new Date().toLocaleTimeString('es-ES');
+    
+    let planificacion, diseno, transicion, operacion, mejoraContinua;
+    
+    if (EVOXIA.data.planificacion.length > 0) {
+        const lastPlan = EVOXIA.data.planificacion[EVOXIA.data.planificacion.length - 1];
+        const lastDis = EVOXIA.data.diseno[EVOXIA.data.diseno.length - 1];
+        const lastTrans = EVOXIA.data.transicion[EVOXIA.data.transicion.length - 1];
+        const lastOper = EVOXIA.data.operacion[EVOXIA.data.operacion.length - 1];
+        const lastMejora = EVOXIA.data.mejoraContinua[EVOXIA.data.mejoraContinua.length - 1];
+        
+        planificacion = Math.max(50, Math.min(100, lastPlan + (Math.random() - 0.5) * 20));
+        diseno = Math.max(50, Math.min(100, lastDis + (Math.random() - 0.5) * 20));
+        transicion = Math.max(50, Math.min(100, lastTrans + (Math.random() - 0.5) * 20));
+        operacion = Math.max(50, Math.min(100, lastOper + (Math.random() - 0.5) * 20));
+        mejoraContinua = Math.max(50, Math.min(100, lastMejora + (Math.random() - 0.5) * 20));
+    } else {
+        planificacion = 70 + Math.random() * 25;
+        diseno = 75 + Math.random() * 20;
+        transicion = 65 + Math.random() * 30;
+        operacion = 80 + Math.random() * 15;
+        mejoraContinua = 72 + Math.random() * 23;
+    }
+    
+    EVOXIA.data.timestamps.push(now);
+    EVOXIA.data.planificacion.push(planificacion);
+    EVOXIA.data.diseno.push(diseno);
+    EVOXIA.data.transicion.push(transicion);
+    EVOXIA.data.operacion.push(operacion);
+    EVOXIA.data.mejoraContinua.push(mejoraContinua);
+    
+    const promedio = (planificacion + diseno + transicion + operacion + mejoraContinua) / 5;
+    
+    // Calcular desviación estándar
+    const values = [planificacion, diseno, transicion, operacion, mejoraContinua];
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+    const stdDev = Math.sqrt(variance);
+    
+    EVOXIA.data.records.push({
+        timestamp: now,
+        planificacion: planificacion,
+        diseno: diseno,
+        transicion: transicion,
+        operacion: operacion,
+        mejoraContinua: mejoraContinua,
+        promedio: promedio,
+        stdDev: stdDev
     });
-  });
-}
-
-function generateInitialRisks() {
-  const riskData = [
-    {
-      description: "Retraso en entrega de hardware por proveedor",
-      category: "Externo",
-      probability: "Alta",
-      impact: "Alto",
-      strategy: "Mitigar",
-      responsible: "PM - Compras"
-    },
-    {
-      description: "Falta de recursos especializados en IA",
-      category: "Organizacional",
-      probability: "Media",
-      impact: "Alto",
-      strategy: "Transferir",
-      responsible: "PM - RRHH"
-    },
-    {
-      description: "Incompatibilidad con sistemas legacy",
-      category: "Técnico",
-      probability: "Alta",
-      impact: "Medio",
-      strategy: "Mitigar",
-      responsible: "Arquitecto de Soluciones"
-    },
-    {
-      description: "Cambios en normativas de salud digital",
-      category: "Externo",
-      probability: "Baja",
-      impact: "Muy Alto",
-      strategy: "Aceptar",
-      responsible: "Legal"
-    },
-    {
-      description: "Sobrecarga del equipo de desarrollo",
-      category: "Gerencia de Proyecto",
-      probability: "Media",
-      impact: "Medio",
-      strategy: "Mitigar",
-      responsible: "Project Manager"
+    
+    const maxData = 50;
+    if (EVOXIA.data.timestamps.length > maxData) {
+        Object.keys(EVOXIA.data).forEach(key => {
+            if (Array.isArray(EVOXIA.data[key])) {
+                EVOXIA.data[key] = EVOXIA.data[key].slice(-maxData);
+            }
+        });
     }
-  ];
-
-  riskData.forEach((risk, index) => {
-    const exposure = calculateRiskExposure(risk.probability, risk.impact);
-    STATE.risks.push({
-      id: `RSK-${String(4001 + index).padStart(6, '0')}`,
-      ...risk,
-      exposure,
-      status: "Activo",
-      createdDate: new Date().toLocaleDateString('es-ES'),
-      lastReview: new Date().toLocaleDateString('es-ES')
-    });
-  });
-}
-
-function calculateRiskExposure(probability, impact) {
-  const probValues = { "Muy Baja": 1, "Baja": 2, "Media": 3, "Alta": 4, "Muy Alta": 5 };
-  const impactValues = { "Muy Bajo": 1, "Bajo": 2, "Medio": 3, "Alto": 4, "Muy Alto": 5 };
-  const score = probValues[probability] * impactValues[impact];
-  
-  if (score >= 16) return "Crítica";
-  if (score >= 9) return "Alta";
-  if (score >= 4) return "Media";
-  return "Baja";
-}
-
-function generateInitialStakeholders() {
-  const stakeholderData = [
-    {
-      name: "Director General Hospital",
-      role: "Sponsor",
-      power: "Alto",
-      interest: "Alto",
-      strategy: "Gestionar Activamente",
-      frequency: "Semanal",
-      channel: "Reunión Ejecutiva"
-    },
-    {
-      name: "Jefe de Sistemas",
-      role: "Cliente",
-      power: "Alto",
-      interest: "Alto",
-      strategy: "Gestionar Activamente",
-      frequency: "Diaria",
-      channel: "Email / Teams"
-    },
-    {
-      name: "Usuario Final - Médicos",
-      role: "Usuario",
-      power: "Bajo",
-      interest: "Alto",
-      strategy: "Mantener Informado",
-      frequency: "Mensual",
-      channel: "Newsletter"
-    },
-    {
-      name: "Proveedor de Hardware",
-      role: "Proveedor",
-      power: "Medio",
-      interest: "Medio",
-      strategy: "Mantener Satisfecho",
-      frequency: "Quincenal",
-      channel: "Email"
-    },
-    {
-      name: "Regulador de Salud",
-      role: "Regulador",
-      power: "Alto",
-      interest: "Medio",
-      strategy: "Mantener Satisfecho",
-      frequency: "Trimestral",
-      channel: "Reporte Formal"
+    
+    try {
+        localStorage.setItem('evoxia_data', JSON.stringify(EVOXIA.data));
+    } catch (e) {
+        console.error('Error al guardar datos:', e);
     }
-  ];
-
-  STATE.stakeholders = stakeholderData;
-}
-
-// ==================== DASHBOARD UPDATE ====================
-function updateDashboard() {
-  // ITIL Metrics
-  const activeIncidents = STATE.incidents.filter(
-    i => i.status === "Abierta" || i.status === "En Progreso"
-  ).length;
-  const criticalIncidents = STATE.incidents.filter(
-    i => i.priority === "Crítica" && i.status !== "Resuelta"
-  ).length;
-  const avgMttr = (STATE.incidents.reduce((sum, i) => sum + parseFloat(i.mttr), 0) / STATE.incidents.length).toFixed(1);
-
-  document.getElementById('stat-incidents').textContent = activeIncidents;
-  document.getElementById('stat-critical').textContent = criticalIncidents;
-  document.getElementById('stat-mttr').textContent = avgMttr + 'h';
-  document.getElementById('incidents-badge').textContent = activeIncidents;
-  document.getElementById('problems-badge').textContent = STATE.problems.filter(p => p.status === "Activo").length;
-
-  // PMBOK Metrics
-  const cpi = STATE.projectData.cpi.toFixed(2);
-  const spi = STATE.projectData.spi.toFixed(2);
-  
-  document.getElementById('stat-cpi').textContent = cpi;
-  document.getElementById('stat-spi').textContent = spi;
-}
-
-// ==================== RENDER FUNCTIONS ====================
-function renderIncidentsTable() {
-  const tbody = document.getElementById('incidents-tbody');
-  const displayIncidents = STATE.incidents.slice(0, 30);
-  
-  tbody.innerHTML = displayIncidents.map(inc => `
-    <tr onclick="showIncidentDetail('${inc.id}')">
-      <td><strong>${inc.id}</strong></td>
-      <td>${inc.date}<br><small style="color: #64748b;">${inc.time}</small></td>
-      <td>${inc.title}</td>
-      <td>${inc.category}</td>
-      <td><span class="priority-badge priority-${inc.priority.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}">${inc.priority}</span></td>
-      <td><span class="status-badge status-${inc.status.toLowerCase().replace(/ /g, '-')}">${inc.status}</span></td>
-      <td>${inc.assignedGroup}</td>
-      <td><span style="color: ${inc.sla ? '#10b981' : '#ef4444'}; font-weight: 600;">${inc.sla ? '✓ OK' : '✗ Incumplido'}</span></td>
-      <td><button class="action-btn">Ver</button></td>
-    </tr>
-  `).join('');
-  
-  addToLiveFeed(`🔍 Filtro aplicado: ${filter}`, false);
-}
-
-// ==================== LIVE FEED ====================
-function addToLiveFeed(message, isCritical = false) {
-  const feed = document.getElementById('live-feed');
-  if (!feed) return;
-  
-  const item = document.createElement('div');
-  item.className = `feed-item ${isCritical ? 'critical' : ''}`;
-  item.innerHTML = `
-    <div class="feed-time">[${new Date().toLocaleTimeString('es-ES')}]</div>
-    <div class="feed-message">${message}</div>
-  `;
-  
-  feed.insertBefore(item, feed.firstChild);
-  
-  // Limitar a 100 items
-  while (feed.children.length > 100) {
-    feed.removeChild(feed.lastChild);
-  }
-}
-
-function showNotification(message) {
-  STATE.notificationCount++;
-  const dot = document.getElementById('notification-dot');
-  if (dot) dot.style.display = 'block';
-  addToLiveFeed(`🔔 ${message}`, false);
-}
-
-function playAlert() {
-  const audio = document.getElementById('alert-sound');
-  if (audio) {
-    audio.play().catch(() => {
-      console.log('Audio playback prevented by browser');
-    });
-  }
-}
-
-// ==================== AUTO UPDATES ====================
-function startAutoUpdates() {
-  // Generar nueva incidencia cada 8 segundos
-  setInterval(() => {
-    if (Math.random() < 0.3) { // 30% de probabilidad
-      generateAutoIncident(false);
-    }
-  }, 8000);
-
-  // Actualizar dashboard cada 5 segundos
-  setInterval(() => {
-    updateDashboard();
-  }, 5000);
-
-  // Actualizar gráficos cada 15 segundos
-  setInterval(() => {
+    
+    updateMetrics(planificacion, diseno, transicion, operacion, mejoraContinua);
+    updateEnergy(promedio);
     updateCharts();
-  }, 15000);
+    updateTable(now, planificacion, diseno, transicion, operacion, mejoraContinua, promedio, stdDev);
+    updateStatsDashboard(); // NUEVA FUNCIÓN
+    analyzeEmotionalState();
+    
+    createEnergyPulse();
+    if (EVOXIA.state.soundEnabled && EVOXIA.sound.initialized) {
+        playDataNote(promedio);
+    }
+    
+    analyzeTrends();
+}
 
-  // Detectar problemas cada 10 segundos
-  setInterval(() => {
-    detectRecurrentProblems();
-  }, 10000);
+// ============ ACTUALIZAR PANEL DE ESTADÍSTICAS ============
+function updateStatsDashboard() {
+    if (EVOXIA.data.records.length === 0) return;
+    
+    const allPromedios = EVOXIA.data.records.map(r => r.promedio);
+    const avgGeneral = allPromedios.reduce((a, b) => a + b, 0) / allPromedios.length;
+    const maxPromedio = Math.max(...allPromedios);
+    const minPromedio = Math.min(...allPromedios);
+    
+    // Encontrar índices de máximo y mínimo
+    const maxIndex = allPromedios.indexOf(maxPromedio);
+    const minIndex = allPromedios.indexOf(minPromedio);
+    const maxTime = EVOXIA.data.records[maxIndex]?.timestamp || '--:--:--';
+    const minTime = EVOXIA.data.records[minIndex]?.timestamp || '--:--:--';
+    
+    // Calcular desviación estándar promedio
+    const allStdDevs = EVOXIA.data.records.map(r => r.stdDev);
+    const avgStdDev = allStdDevs.reduce((a, b) => a + b, 0) / allStdDevs.length;
+    const stability = avgStdDev < 5 ? 'Alta' : avgStdDev < 10 ? 'Media' : 'Baja';
+    
+    // Encontrar fase líder
+    const lastRecord = EVOXIA.data.records[EVOXIA.data.records.length - 1];
+    const fases = {
+        'Planificación': lastRecord.planificacion,
+        'Diseño': lastRecord.diseno,
+        'Transición': lastRecord.transicion,
+        'Operación': lastRecord.operacion,
+        'Mejora': lastRecord.mejoraContinua
+    };
+    const topPhase = Object.keys(fases).reduce((a, b) => fases[a] > fases[b] ? a : b);
+    const topPhaseValue = fases[topPhase];
+    
+    // Calcular tendencia
+    let trendIcon = '●';
+    let trendClass = 'trend-stable-stat';
+    if (EVOXIA.data.records.length >= 2) {
+        const current = allPromedios[allPromedios.length - 1];
+        const previous = allPromedios[allPromedios.length - 2];
+        if (current > previous + 2) {
+            trendIcon = '▲';
+            trendClass = 'trend-up-stat';
+        } else if (current < previous - 2) {
+            trendIcon = '▼';
+            trendClass = 'trend-down-stat';
+        }
+    }
+    
+    // Actualizar elementos
+    const statAvgGeneral = document.getElementById('statAvgGeneral');
+    if (statAvgGeneral) statAvgGeneral.textContent = `${Math.round(avgGeneral)}%`;
+    
+    const statTrendGeneral = document.getElementById('statTrendGeneral');
+    if (statTrendGeneral) {
+        statTrendGeneral.textContent = trendIcon;
+        statTrendGeneral.className = `stat-trend ${trendClass}`;
+    }
+    
+    const statMaxRecord = document.getElementById('statMaxRecord');
+    if (statMaxRecord) statMaxRecord.textContent = `${Math.round(maxPromedio)}%`;
+    
+    const statMaxTime = document.getElementById('statMaxTime');
+    if (statMaxTime) statMaxTime.textContent = maxTime;
+    
+    const statMinRecord = document.getElementById('statMinRecord');
+    if (statMinRecord) statMinRecord.textContent = `${Math.round(minPromedio)}%`;
+    
+    const statMinTime = document.getElementById('statMinTime');
+    if (statMinTime) statMinTime.textContent = minTime;
+    
+    const statStability = document.getElementById('statStability');
+    if (statStability) statStability.textContent = stability;
+    
+    const statStabilityValue = document.getElementById('statStabilityValue');
+    if (statStabilityValue) statStabilityValue.textContent = `σ: ${avgStdDev.toFixed(2)}`;
+    
+    const statTopPhase = document.getElementById('statTopPhase');
+    if (statTopPhase) statTopPhase.textContent = topPhase;
+    
+    const statTopPhaseValue = document.getElementById('statTopPhaseValue');
+    if (statTopPhaseValue) statTopPhaseValue.textContent = `${Math.round(topPhaseValue)}%`;
+    
+    const statRecordCount = document.getElementById('statRecordCount');
+    if (statRecordCount) statRecordCount.textContent = `${EVOXIA.data.records.length} registros`;
+}
+
+function updateMetrics(plan, dis, trans, oper, mejora) {
+    animateValue('metricRendimiento', plan);
+    animateValue('metricEquilibrio', dis);
+    animateValue('metricEficiencia', trans);
+    animateValue('metricMejora', oper);
+    animateValue('metricMejoraContinua', mejora);
+}
+
+function updateEnergy(value) {
+    EVOXIA.state.energy = value;
+    const energyLevel = document.getElementById('energyLevel');
+    const energyFill = document.getElementById('energyFill');
+    
+    if (energyLevel) energyLevel.textContent = Math.round(value);
+    if (energyFill) energyFill.style.width = value + '%';
+}
+
+function animateValue(elementId, targetValue) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const currentValue = parseFloat(element.textContent) || 0;
+    const increment = (targetValue - currentValue) / 20;
+    let current = currentValue;
+    
+    const animation = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= targetValue) || (increment < 0 && current <= targetValue)) {
+            current = targetValue;
+            clearInterval(animation);
+        }
+        element.textContent = Math.round(current);
+    }, 50);
+}
+
+// ============ TABLA MEJORADA CON MÁS INFORMACIÓN ============
+function updateTable(time, plan, dis, trans, oper, mejora, promedio, stdDev) {
+    const tbody = document.getElementById('dataTableBody');
+    if (!tbody) return;
+    
+    const row = tbody.insertRow(0);
+    row.className = 'new-row';
+    row.dataset.index = EVOXIA.data.records.length - 1;
+    
+    const getColorClass = (value) => {
+        if (value >= 90) return 'performance-excellent';
+        if (value >= 75) return 'performance-good';
+        if (value >= 60) return 'performance-warning';
+        return 'performance-critical';
+    };
+    
+    // Determinar fase dominante
+    const fases = {
+        'Plan': plan,
+        'Diseño': dis,
+        'Trans': trans,
+        'Oper': oper,
+        'Mejora': mejora
+    };
+    const faseDominante = Object.keys(fases).reduce((a, b) => fases[a] > fases[b] ? a : b);
+    
+    // Determinar estado del sistema
+    let estadoSistema = '';
+    let estadoClass = '';
+    if (promedio >= 90) {
+        estadoSistema = 'Óptimo';
+        estadoClass = 'status-optimal';
+    } else if (promedio >= 75) {
+        estadoSistema = 'Bueno';
+        estadoClass = 'status-good';
+    } else if (promedio >= 60) {
+        estadoSistema = 'Alerta';
+        estadoClass = 'status-warning';
+    } else {
+        estadoSistema = 'Crítico';
+        estadoClass = 'status-critical';
+    }
+    
+    // Temperatura operacional
+    let tempIcon = '';
+    if (promedio >= 90) tempIcon = '🔥';
+    else if (promedio >= 75) tempIcon = '🌡️';
+    else if (promedio >= 60) tempIcon = '⚠️';
+    else tempIcon = '❄️';
+    
+    let trendIcon = '◆';
+    if (tbody.rows.length > 1) {
+        const prevRow = tbody.rows[1];
+        const prevPromedio = parseFloat(prevRow.cells[6].querySelector('.value-main').textContent.replace('%', ''));
+        
+        if (promedio > prevPromedio + 2) trendIcon = '▲';
+        else if (promedio < prevPromedio - 2) trendIcon = '▼';
+    }
+    
+    row.innerHTML = `
+        <td class="time-cell">
+            <div class="cell-content">
+                <span class="time-value">${time}</span>
+                <span class="trend-indicator ${promedio >= 80 ? 'trend-up' : promedio >= 60 ? 'trend-stable' : 'trend-down'}">${trendIcon}</span>
+            </div>
+        </td>
+        <td class="${getColorClass(plan)}">
+            <div class="cell-content">
+                <span class="value-main">${Math.round(plan)}%</span>
+                <span class="value-label">Estrategia</span>
+            </div>
+        </td>
+        <td class="${getColorClass(dis)}">
+            <div class="cell-content">
+                <span class="value-main">${Math.round(dis)}%</span>
+                <span class="value-label">Catálogo/SLA</span>
+            </div>
+        </td>
+        <td class="${getColorClass(trans)}">
+            <div class="cell-content">
+                <span class="value-main">${Math.round(trans)}%</span>
+                <span class="value-label">Cambios</span>
+            </div>
+        </td>
+        <td class="${getColorClass(oper)}">
+            <div class="cell-content">
+                <span class="value-main">${Math.round(oper)}%</span>
+                <span class="value-label">Incidentes</span>
+            </div>
+        </td>
+        <td class="${getColorClass(mejora)}">
+            <div class="cell-content">
+                <span class="value-main">${Math.round(mejora)}%</span>
+                <span class="value-label">KPIs/CSI</span>
+            </div>
+        </td>
+        <td class="average-cell ${getColorClass(promedio)}">
+            <div class="cell-content">
+                <span class="value-main">${Math.round(promedio)}%</span>
+                <span class="value-label">Promedio</span>
+            </div>
+        </td>
+        <td class="stddev-cell">
+            <div class="cell-content">
+                <span class="value-main">${stdDev.toFixed(2)}</span>
+                <span class="value-label">${stdDev < 5 ? 'Alta' : stdDev < 10 ? 'Media' : 'Baja'}</span>
+            </div>
+        </td>
+        <td class="phase-dom-cell">
+            <div class="cell-content">
+                <span class="value-main">${faseDominante}</span>
+                <span class="value-label">${Math.round(fases[faseDominante])}%</span>
+            </div>
+        </td>
+        <td>
+            <span class="status-badge ${estadoClass}">${estadoSistema}</span>
+        </td>
+        <td class="temp-cell">
+            <div class="cell-content">
+                <span class="temp-indicator">${tempIcon}</span>
+            </div>
+        </td>
+    `;
+    
+    row.addEventListener('click', () => {
+        openDetailModal(row.dataset.index);
+    });
+    
+    while (tbody.rows.length > 20) {
+        tbody.deleteRow(tbody.rows.length - 1);
+    }
+    
+    setTimeout(() => {
+        row.style.transform = 'translateX(0)';
+        row.style.opacity = '1';
+    }, 50);
+}
+
+// ============ MODAL DE DETALLE AMPLIADO ============
+function openDetailModal(index) {
+    const record = EVOXIA.data.records[index];
+    if (!record) return;
+    
+    const modal = document.getElementById('detailModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    
+    if (!modal || !modalTitle || !modalBody) return;
+    
+    modalTitle.textContent = `Detalle del Registro #${parseInt(index) + 1} - ${record.timestamp}`;
+    
+    const getStatus = (value) => {
+        if (value >= 90) return { text: 'Excelente', icon: '🌟', color: '#00ff88', desc: 'Rendimiento óptimo' };
+        if (value >= 75) return { text: 'Bueno', icon: '✅', color: '#00d4ff', desc: 'Por encima del estándar' };
+        if (value >= 60) return { text: 'Aceptable', icon: '⚠️', color: '#ffd600', desc: 'Requiere monitoreo' };
+        return { text: 'Crítico', icon: '🔴', color: '#ff3d00', desc: 'Requiere acción inmediata' };
+    };
+    
+    const planStatus = getStatus(record.planificacion);
+    const disStatus = getStatus(record.diseno);
+    const transStatus = getStatus(record.transicion);
+    const operStatus = getStatus(record.operacion);
+    const mejoraStatus = getStatus(record.mejoraContinua);
+    const promedioStatus = getStatus(record.promedio);
+    
+    const stability = record.stdDev < 5 ? 'Alta' : record.stdDev < 10 ? 'Media' : 'Baja';
+    const stabilityIcon = record.stdDev < 5 ? '🎯' : record.stdDev < 10 ? '📊' : '⚡';
+    const stabilityDesc = record.stdDev < 5 ? 'Sistema muy estable' : record.stdDev < 10 ? 'Variación moderada' : 'Alta variabilidad';
+    
+    // Calcular comparación con registro anterior
+    let comparison = '';
+    let trendInfo = '';
+    if (index > 0) {
+        const prevRecord = EVOXIA.data.records[index - 1];
+        const diff = record.promedio - prevRecord.promedio;
+        const diffPercent = ((diff / prevRecord.promedio) * 100).toFixed(2);
+        
+        if (diff > 0) {
+            comparison = `<span style="color: #00ff88;">▲ +${diff.toFixed(2)}% (${diffPercent}% de mejora)</span>`;
+            trendInfo = 'Tendencia positiva';
+        } else if (diff < 0) {
+            comparison = `<span style="color: #ff3d00;">▼ ${diff.toFixed(2)}% (${Math.abs(diffPercent)}% de disminución)</span>`;
+            trendInfo = 'Tendencia negativa';
+        } else {
+            comparison = `<span style="color: #ffd700;">● Sin cambios</span>`;
+            trendInfo = 'Estable';
+        }
+    } else {
+        comparison = '<span style="color: #00d4ff;">● Primer registro</span>';
+        trendInfo = 'Línea base';
+    }
+    
+    // Calcular brechas (gaps) entre fases
+    const values = [record.planificacion, record.diseno, record.transicion, record.operacion, record.mejoraContinua];
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+    const gap = maxValue - minValue;
+    const gapAnalysis = gap < 10 ? 'Fases muy equilibradas' : gap < 20 ? 'Equilibrio moderado' : 'Desequilibrio significativo';
+    
+    // Calcular posición relativa en el histórico
+    const allPromedios = EVOXIA.data.records.map(r => r.promedio);
+    const sortedPromedios = [...allPromedios].sort((a, b) => b - a);
+    const position = sortedPromedios.indexOf(record.promedio) + 1;
+    const percentile = ((1 - (position / allPromedios.length)) * 100).toFixed(0);
+    
+    // Identificar fortalezas y debilidades
+    const fases = {
+        'Planificación': { value: record.planificacion, icon: '📋' },
+        'Diseño': { value: record.diseno, icon: '🎨' },
+        'Transición': { value: record.transicion, icon: '🔄' },
+        'Operación': { value: record.operacion, icon: '⚙️' },
+        'Mejora Continua': { value: record.mejoraContinua, icon: '📈' }
+    };
+    
+    const sortedFases = Object.entries(fases).sort((a, b) => b[1].value - a[1].value);
+    const fortaleza = sortedFases[0];
+    const debilidad = sortedFases[4];
+    
+    modalBody.innerHTML = `
+        <!-- Resumen Ejecutivo -->
+        <div class="modal-executive-summary">
+            <div class="summary-badge ${promedioStatus.text.toLowerCase()}">
+                ${promedioStatus.icon} ${promedioStatus.text}
+            </div>
+            <div class="summary-main">
+                <div class="summary-score">${Math.round(record.promedio)}%</div>
+                <div class="summary-desc">${promedioStatus.desc}</div>
+            </div>
+            <div class="summary-comparison">
+                <strong>vs Anterior:</strong> ${comparison}
+            </div>
+        </div>
+        
+        <!-- Métricas Principales -->
+        <div class="detail-grid">
+            <div class="detail-card enhanced">
+                <div class="detail-icon">📋</div>
+                <div class="detail-value" style="color: ${planStatus.color}">${Math.round(record.planificacion)}%</div>
+                <div class="detail-label">Planificación</div>
+                <div class="detail-sublabel">${planStatus.icon} ${planStatus.text}</div>
+                <div class="detail-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${record.planificacion}%; background: ${planStatus.color};"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-card enhanced">
+                <div class="detail-icon">🎨</div>
+                <div class="detail-value" style="color: ${disStatus.color}">${Math.round(record.diseno)}%</div>
+                <div class="detail-label">Diseño</div>
+                <div class="detail-sublabel">${disStatus.icon} ${disStatus.text}</div>
+                <div class="detail-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${record.diseno}%; background: ${disStatus.color};"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-card enhanced">
+                <div class="detail-icon">🔄</div>
+                <div class="detail-value" style="color: ${transStatus.color}">${Math.round(record.transicion)}%</div>
+                <div class="detail-label">Transición</div>
+                <div class="detail-sublabel">${transStatus.icon} ${transStatus.text}</div>
+                <div class="detail-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${record.transicion}%; background: ${transStatus.color};"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-card enhanced">
+                <div class="detail-icon">⚙️</div>
+                <div class="detail-value" style="color: ${operStatus.color}">${Math.round(record.operacion)}%</div>
+                <div class="detail-label">Operación</div>
+                <div class="detail-sublabel">${operStatus.icon} ${operStatus.text}</div>
+                <div class="detail-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${record.operacion}%; background: ${operStatus.color};"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-card enhanced">
+                <div class="detail-icon">📈</div>
+                <div class="detail-value" style="color: ${mejoraStatus.color}">${Math.round(record.mejoraContinua)}%</div>
+                <div class="detail-label">Mejora Continua</div>
+                <div class="detail-sublabel">${mejoraStatus.icon} ${mejoraStatus.text}</div>
+                <div class="detail-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${record.mejoraContinua}%; background: ${mejoraStatus.color};"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-card enhanced highlight">
+                <div class="detail-icon">⭐</div>
+                <div class="detail-value" style="color: ${promedioStatus.color}">${Math.round(record.promedio)}%</div>
+                <div class="detail-label">Promedio General</div>
+                <div class="detail-sublabel">${promedioStatus.icon} ${promedioStatus.text}</div>
+                <div class="detail-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${record.promedio}%; background: ${promedioStatus.color};"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Análisis Estadístico -->
+        <div class="detail-analysis">
+            <h3>📊 Análisis Estadístico Completo</h3>
+            
+            <div class="analysis-grid">
+                <div class="analysis-item">
+                    <div class="analysis-icon">${stabilityIcon}</div>
+                    <div class="analysis-text">
+                        <strong>Estabilidad:</strong> ${stability}
+                        <div class="analysis-subtext">${stabilityDesc} (σ = ${record.stdDev.toFixed(2)})</div>
+                    </div>
+                </div>
+                
+                <div class="analysis-item">
+                    <div class="analysis-icon">🎯</div>
+                    <div class="analysis-text">
+                        <strong>Fase Dominante:</strong> ${getFaseDominante(record)}
+                        <div class="analysis-subtext">Mejor desempeño del ciclo</div>
+                    </div>
+                </div>
+                
+                <div class="analysis-item">
+                    <div class="analysis-icon">📉</div>
+                    <div class="analysis-text">
+                        <strong>Brecha de Rendimiento:</strong> ${gap.toFixed(2)}%
+                        <div class="analysis-subtext">${gapAnalysis}</div>
+                    </div>
+                </div>
+                
+                <div class="analysis-item">
+                    <div class="analysis-icon">📍</div>
+                    <div class="analysis-text">
+                        <strong>Posición Histórica:</strong> #${position} de ${allPromedios.length}
+                        <div class="analysis-subtext">Percentil ${percentile} del histórico</div>
+                    </div>
+                </div>
+                
+                <div class="analysis-item">
+                    <div class="analysis-icon">📈</div>
+                    <div class="analysis-text">
+                        <strong>Tendencia:</strong> ${trendInfo}
+                        <div class="analysis-subtext">${comparison}</div>
+                    </div>
+                </div>
+                
+                <div class="analysis-item">
+                    <div class="analysis-icon">🌡️</div>
+                    <div class="analysis-text">
+                        <strong>Temperatura Operacional:</strong> ${getTemperaturaOperacional(record.promedio)}
+                        <div class="analysis-subtext">Estado térmico del sistema</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Fortalezas y Debilidades -->
+        <div class="detail-analysis">
+            <h3>💪 Fortalezas y Oportunidades de Mejora</h3>
+            
+            <div class="strength-weakness">
+                <div class="strength-box">
+                    <div class="sw-header">
+                        <span class="sw-icon">✅</span>
+                        <strong>Principal Fortaleza</strong>
+                    </div>
+                    <div class="sw-content">
+                        <div class="sw-phase">${fortaleza[1].icon} ${fortaleza[0]}</div>
+                        <div class="sw-value">${Math.round(fortaleza[1].value)}%</div>
+                        <div class="sw-desc">Excelente desempeño en esta fase</div>
+                    </div>
+                </div>
+                
+                <div class="weakness-box">
+                    <div class="sw-header">
+                        <span class="sw-icon">🎯</span>
+                        <strong>Área de Oportunidad</strong>
+                    </div>
+                    <div class="sw-content">
+                        <div class="sw-phase">${debilidad[1].icon} ${debilidad[0]}</div>
+                        <div class="sw-value">${Math.round(debilidad[1].value)}%</div>
+                        <div class="sw-desc">Potencial de mejora: ${(fortaleza[1].value - debilidad[1].value).toFixed(1)}%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recomendaciones -->
+        <div class="detail-analysis">
+            <h3>💡 Recomendaciones Personalizadas</h3>
+            
+            <div class="recommendations">
+                <div class="recommendation-item priority-high">
+                    <div class="rec-icon">🔴</div>
+                    <div class="rec-content">
+                        <strong>Prioridad Alta:</strong>
+                        <p>${getRecomendacion(record)}</p>
+                    </div>
+                </div>
+                
+                <div class="recommendation-item priority-medium">
+                    <div class="rec-icon">🟡</div>
+                    <div class="rec-content">
+                        <strong>Prioridad Media:</strong>
+                        <p>${getRecomendacionSecundaria(record)}</p>
+                    </div>
+                </div>
+                
+                <div class="recommendation-item priority-low">
+                    <div class="rec-icon">🟢</div>
+                    <div class="rec-content">
+                        <strong>Mantenimiento:</strong>
+                        <p>Continuar con las prácticas actuales en ${fortaleza[0]} (${Math.round(fortaleza[1].value)}%)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Metadata del Registro -->
+        <div class="detail-metadata">
+            <div class="metadata-item">
+                <span class="meta-icon">⏱️</span>
+                <span class="meta-label">Timestamp:</span>
+                <span class="meta-value">${record.timestamp}</span>
+            </div>
+            <div class="metadata-item">
+                <span class="meta-icon">🔢</span>
+                <span class="meta-label">ID de Registro:</span>
+                <span class="meta-value">#${parseInt(index) + 1}</span>
+            </div>
+            <div class="metadata-item">
+                <span class="meta-icon">📊</span>
+                <span class="meta-label">Desviación Estándar:</span>
+                <span class="meta-value">${record.stdDev.toFixed(4)}</span>
+            </div>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+}
+
+// Nueva función para recomendación secundaria
+function getRecomendacionSecundaria(record) {
+    const values = [
+        { name: 'Planificación', value: record.planificacion },
+        { name: 'Diseño', value: record.diseno },
+        { name: 'Transición', value: record.transicion },
+        { name: 'Operación', value: record.operacion },
+        { name: 'Mejora Continua', value: record.mejoraContinua }
+    ];
+    
+    const sorted = values.sort((a, b) => a.value - b.value);
+    const secondLowest = sorted[1];
+    
+    const recommendations = {
+        'Planificación': 'Revisar y actualizar la estrategia de servicios para alinearla mejor con los objetivos del negocio',
+        'Diseño': 'Evaluar y mejorar el catálogo de servicios y los acuerdos de nivel de servicio (SLA)',
+        'Transición': 'Optimizar los procesos de gestión de cambios para reducir riesgos en las implementaciones',
+        'Operación': 'Mejorar los tiempos de respuesta en la gestión de incidentes y solicitudes de servicio',
+        'Mejora Continua': 'Implementar un programa más robusto de medición de KPIs y análisis de mejoras'
+    };
+    
+    return recommendations[secondLowest.name] || 'Mantener el monitoreo constante de todas las fases';
+}
+
+function getFaseDominante(record) {
+    const fases = {
+        'Planificación': record.planificacion,
+        'Diseño': record.diseno,
+        'Transición': record.transicion,
+        'Operación': record.operacion,
+        'Mejora Continua': record.mejoraContinua
+    };
+    
+    const max = Math.max(...Object.values(fases));
+    const dominante = Object.keys(fases).find(key => fases[key] === max);
+    
+    return `${dominante} con ${Math.round(max)}% de rendimiento`;
+}
+
+function getRecomendacion(record) {
+    const min = Math.min(record.planificacion, record.diseno, record.transicion, record.operacion, record.mejoraContinua);
+    
+    if (min === record.planificacion) return 'Reforzar la estrategia y planificación del servicio';
+    if (min === record.diseno) return 'Mejorar el diseño del catálogo y SLAs';
+    if (min === record.transicion) return 'Optimizar la gestión de cambios y releases';
+    if (min === record.operacion) return 'Fortalecer la gestión de incidentes y operaciones';
+    if (min === record.mejoraContinua) return 'Implementar mejoras continuas y monitorear KPIs';
+    
+    return 'Sistema en equilibrio óptimo';
+}
+
+function getTemperaturaOperacional(promedio) {
+    if (promedio >= 90) return '🔥 Óptima - Sistema en máximo rendimiento';
+    if (promedio >= 75) return '🌡️ Normal - Operaciones estables';
+    if (promedio >= 60) return '⚠️ Templada - Requiere atención';
+    return '❄️ Baja - Necesita intervención inmediata';
+}
+
+function closeDetailModal() {
+    const modal = document.getElementById('detailModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// ============ ANÁLISIS EMOCIONAL ============
+function analyzeEmotionalState() {
+    const data = EVOXIA.data;
+    if (data.operacion.length < 5) return;
+    
+    const recent = {
+        plan: data.planificacion.slice(-5),
+        dis: data.diseno.slice(-5),
+        trans: data.transicion.slice(-5),
+        oper: data.operacion.slice(-5),
+        mejora: data.mejoraContinua.slice(-5)
+    };
+    
+    const allValues = [...recent.plan, ...recent.dis, ...recent.trans, ...recent.oper, ...recent.mejora];
+    const avg = allValues.reduce((a, b) => a + b, 0) / allValues.length;
+    const variance = allValues.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / allValues.length;
+    const stdDev = Math.sqrt(variance);
+    
+    let newEmotion = 'Armonía';
+    
+    if (stdDev < 3) {
+        newEmotion = 'Silencio';
+    } else if (stdDev > 15) {
+        newEmotion = 'Caos';
+    } else if (avg > 90) {
+        newEmotion = 'Expansión';
+    } else if (stdDev > 8 && stdDev < 15) {
+        newEmotion = 'Flujo';
+    }
+    
+    if (newEmotion !== EVOXIA.state.emotion) {
+        EVOXIA.state.emotion = newEmotion;
+        updateEmotionalState(newEmotion);
+    }
+}
+
+function updateEmotionalState(emotion) {
+    const stateEl = document.getElementById('emotionalState');
+    const statusEl = document.getElementById('systemStatus');
+    const overlay = document.getElementById('emotionalOverlay');
+    
+    if (stateEl) stateEl.textContent = emotion;
+    if (statusEl) statusEl.textContent = `Sistema en ${emotion}`;
+    
+    const colors = {
+        'Armonía': 'rgba(0, 212, 255, 0.1)',
+        'Flujo': 'rgba(0, 255, 136, 0.1)',
+        'Caos': 'rgba(255, 61, 0, 0.15)',
+        'Expansión': 'rgba(255, 215, 0, 0.1)',
+        'Silencio': 'rgba(138, 43, 226, 0.1)'
+    };
+    
+    if (overlay) {
+        overlay.style.background = colors[emotion] || colors['Armonía'];
+    }
+}
+
+function analyzeTrends() {
+    const data = EVOXIA.data;
+    if (data.operacion.length < 10) return;
+    
+    const recent = data.operacion.slice(-5);
+    const older = data.operacion.slice(-10, -5);
+    
+    const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
+    const olderAvg = older.reduce((a, b) => a + b, 0) / older.length;
+    
+    const trend = recentAvg - olderAvg;
+    
+    const allRecent = [
+        ...data.planificacion.slice(-5),
+        ...data.diseno.slice(-5),
+        ...data.transicion.slice(-5),
+        ...data.operacion.slice(-5),
+        ...data.mejoraContinua.slice(-5)
+    ];
+    const avgAll = allRecent.reduce((a, b) => a + b, 0) / allRecent.length;
+    
+    if (trend > 10 && avgAll > 85) {
+        celebrateImprovement();
+    }
+}
+
+// ============ GRÁFICOS (CON 2 NUEVOS) ============
+function initializeCharts() {
+    try {
+        initLineChart();
+        initRadarChart();
+        initDonutChart();
+        initBarChart();
+        initAreaChart(); // NUEVO
+        initPolarChart(); // NUEVO
+        init3DPlot();
+    } catch (error) {
+        console.error('Error al inicializar gráficos:', error);
+    }
+}
+
+function initLineChart() {
+    const canvas = document.getElementById('lineChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    EVOXIA.charts.line = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Planificación',
+                data: [],
+                borderColor: '#00d4ff',
+                backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Diseño',
+                data: [],
+                borderColor: '#ff00ea',
+                backgroundColor: 'rgba(255, 0, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Transición',
+                data: [],
+                borderColor: '#00ff88',
+                backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Operación',
+                data: [],
+                borderColor: '#ffd700',
+                backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Mejora Continua',
+                data: [],
+                borderColor: '#ff69b4',
+                backgroundColor: 'rgba(255, 105, 180, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#e0e6ff' }
+                },
+                title: {
+                    display: true,
+                    text: 'Ciclo de Vida del Servicio',
+                    color: '#e0e6ff',
+                    font: { size: 16 }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { color: '#e0e6ff' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    title: {
+                        display: true,
+                        text: 'Rendimiento (%)',
+                        color: '#e0e6ff'
+                    }
+                },
+                x: {
+                    ticks: { color: '#e0e6ff' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            },
+            animation: {
+                duration: 750
+            }
+        }
+    });
+}
+
+function initRadarChart() {
+    const canvas = document.getElementById('radarChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    EVOXIA.charts.radar = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Planificación', 'Diseño', 'Transición', 'Operación', 'Mejora'],
+            datasets: [{
+                label: 'Fase Actual',
+                data: [80, 75, 85, 90, 70],
+                borderColor: '#00ff88',
+                backgroundColor: 'rgba(0, 255, 136, 0.2)',
+                pointBackgroundColor: '#00ff88',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#00ff88'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#e0e6ff' }
+                }
+            },
+            scales: {
+                r: {
+                    ticks: { color: '#e0e6ff', backdropColor: 'transparent' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    pointLabels: { color: '#e0e6ff' },
+                    angleLines: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        }
+    });
+}
+
+function initDonutChart() {
+    const canvas = document.getElementById('donutChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    EVOXIA.charts.donut = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Operativo', 'En Mejora', 'Standby'],
+            datasets: [{
+                data: [70, 25, 5],
+                backgroundColor: ['#00d4ff', '#ff00ea', '#00ff88'],
+                borderColor: '#1a1f3a',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#e0e6ff' }
+                }
+            }
+        }
+    });
+}
+
+function initBarChart() {
+    const canvas = document.getElementById('barChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    EVOXIA.charts.bar = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Planificación', 'Diseño', 'Transición', 'Operación', 'Mejora'],
+            datasets: [{
+                label: 'Energía por Fase',
+                data: [85, 78, 92, 88, 75],
+                backgroundColor: [
+                    'rgba(0, 212, 255, 0.7)',
+                    'rgba(255, 0, 234, 0.7)',
+                    'rgba(0, 255, 136, 0.7)',
+                    'rgba(255, 215, 0, 0.7)',
+                    'rgba(138, 43, 226, 0.7)'
+                ],
+                borderColor: [
+                    '#00d4ff',
+                    '#ff00ea',
+                    '#00ff88',
+                    '#ffd700',
+                    '#8a2be2'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#e0e6ff' }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#e0e6ff' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                x: {
+                    ticks: { color: '#e0e6ff' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        }
+    });
+}
+
+// ============ NUEVO GRÁFICO DE ÁREA ============
+function initAreaChart() {
+    const canvas = document.getElementById('areaChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    EVOXIA.charts.area = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Tendencia General',
+                data: [],
+                borderColor: '#00d4ff',
+                backgroundColor: 'rgba(0, 212, 255, 0.3)',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 3
+            }, {
+                label: 'Proyección',
+                data: [],
+                borderColor: '#ff00ea',
+                backgroundColor: 'rgba(255, 0, 234, 0.2)',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 2,
+                borderDash: [5, 5]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#e0e6ff' }
+                },
+                title: {
+                    display: true,
+                    text: 'Análisis de Tendencia',
+                    color: '#e0e6ff',
+                    font: { size: 14 }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { color: '#e0e6ff' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                x: {
+                    ticks: { color: '#e0e6ff' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        }
+    });
+}
+
+// ============ NUEVO GRÁFICO POLAR ============
+function initPolarChart() {
+    const canvas = document.getElementById('polarChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    EVOXIA.charts.polar = new Chart(ctx, {
+        type: 'polarArea',
+        data: {
+            labels: ['Planificación', 'Diseño', 'Transición', 'Operación', 'Mejora Continua'],
+            datasets: [{
+                label: 'Distribución de Fases',
+                data: [85, 78, 92, 88, 75],
+                backgroundColor: [
+                    'rgba(0, 212, 255, 0.6)',
+                    'rgba(255, 0, 234, 0.6)',
+                    'rgba(0, 255, 136, 0.6)',
+                    'rgba(255, 215, 0, 0.6)',
+                    'rgba(255, 105, 180, 0.6)'
+                ],
+                borderColor: [
+                    '#00d4ff',
+                    '#ff00ea',
+                    '#00ff88',
+                    '#ffd700',
+                    '#ff69b4'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#e0e6ff' }
+                }
+            },
+            scales: {
+                r: {
+                    ticks: { 
+                        color: '#e0e6ff',
+                        backdropColor: 'transparent'
+                    },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    pointLabels: { color: '#e0e6ff' }
+                }
+            }
+        }
+    });
+}
+
+function init3DPlot() {
+    const container = document.getElementById('plotly3d');
+    if (!container) return;
+    
+    const data = [{
+        x: [70, 75, 80, 85, 90],
+        y: [65, 70, 75, 80, 85],
+        z: [75, 80, 85, 90, 95],
+        mode: 'markers+lines',
+        type: 'scatter3d',
+        marker: {
+            size: 8,
+            color: [75, 80, 85, 90, 95],
+            colorscale: 'Viridis',
+            showscale: true,
+            colorbar: {
+                title: 'Operación',
+                titlefont: { color: '#e0e6ff' },
+                tickfont: { color: '#e0e6ff' }
+            }
+        },
+        line: {
+            color: '#00d4ff',
+            width: 2
+        }
+    }];
+    
+    const layout = {
+        title: {
+            text: 'Espacio 3D: Planificación × Diseño × Operación',
+            font: { color: '#e0e6ff', size: 14 }
+        },
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        scene: {
+            xaxis: { 
+                title: 'Planificación',
+                gridcolor: 'rgba(255, 255, 255, 0.1)', 
+                color: '#e0e6ff',
+                titlefont: { color: '#e0e6ff' }
+            },
+            yaxis: { 
+                title: 'Diseño',
+                gridcolor: 'rgba(255, 255, 255, 0.1)', 
+                color: '#e0e6ff',
+                titlefont: { color: '#e0e6ff' }
+            },
+            zaxis: { 
+                title: 'Operación',
+                gridcolor: 'rgba(255, 255, 255, 0.1)', 
+                color: '#e0e6ff',
+                titlefont: { color: '#e0e6ff' }
+            },
+            bgcolor: 'transparent'
+        },
+        margin: { l: 0, r: 0, t: 40, b: 0 }
+    };
+    
+    Plotly.newPlot('plotly3d', data, layout, { responsive: true });
 }
 
 function updateCharts() {
-  // Actualizar gráfico de prioridades
-  if (STATE.charts.incidentsPriority) {
-    STATE.charts.incidentsPriority.data.datasets[0].data = ITIL.priorities.map(p => 
-      STATE.incidents.filter(i => i.priority === p).length
-    );
-    STATE.charts.incidentsPriority.update('none');
-  }
-
-  // Actualizar gráfico SLA
-  if (STATE.charts.sla) {
-    STATE.charts.sla.data.datasets[0].data = ITIL.categories.map(cat => {
-      const catIncidents = STATE.incidents.filter(i => i.category === cat);
-      const compliant = catIncidents.filter(i => i.sla).length;
-      return catIncidents.length > 0 ? ((compliant / catIncidents.length) * 100).toFixed(1) : 0;
-    });
-    STATE.charts.sla.update('none');
-  }
-}
-
-// ==================== RISK MATRIX RENDERING ====================
-function renderRiskMatrix() {
-  const container = document.getElementById('risk-matrix');
-  if (!container) return;
-
-  const matrix = [];
-  for (let prob = 5; prob >= 1; prob--) {
-    for (let impact = 1; impact <= 5; impact++) {
-      const score = prob * impact;
-      let level = 'low';
-      if (score >= 16) level = 'high';
-      else if (score >= 9) level = 'medium';
-      else if (score >= 4) level = 'medium';
-      
-      const riskCount = STATE.risks.filter(r => {
-        const probValues = { "Muy Baja": 1, "Baja": 2, "Media": 3, "Alta": 4, "Muy Alta": 5 };
-        const impactValues = { "Muy Bajo": 1, "Bajo": 2, "Medio": 3, "Alto": 4, "Muy Alto": 5 };
-        return probValues[r.probability] === prob && impactValues[r.impact] === impact;
-      }).length;
-      
-      matrix.push(`
-        <div class="risk-cell ${level}" title="P:${prob} I:${impact}">
-          ${riskCount > 0 ? riskCount : ''}
-        </div>
-      `);
+    try {
+        // Actualizar gráfico de línea
+        if (EVOXIA.charts.line && EVOXIA.data.timestamps.length > 0) {
+            const maxPoints = 20;
+            EVOXIA.charts.line.data.labels = EVOXIA.data.timestamps.slice(-maxPoints);
+            EVOXIA.charts.line.data.datasets[0].data = EVOXIA.data.planificacion.slice(-maxPoints);
+            EVOXIA.charts.line.data.datasets[1].data = EVOXIA.data.diseno.slice(-maxPoints);
+            EVOXIA.charts.line.data.datasets[2].data = EVOXIA.data.transicion.slice(-maxPoints);
+            EVOXIA.charts.line.data.datasets[3].data = EVOXIA.data.operacion.slice(-maxPoints);
+            EVOXIA.charts.line.data.datasets[4].data = EVOXIA.data.mejoraContinua.slice(-maxPoints);
+            EVOXIA.charts.line.update('none');
+        }
+        
+        // Actualizar radar
+        if (EVOXIA.charts.radar && EVOXIA.data.planificacion.length > 0) {
+            const lastIndex = EVOXIA.data.planificacion.length - 1;
+            EVOXIA.charts.radar.data.datasets[0].data = [
+                EVOXIA.data.planificacion[lastIndex] || 75,
+                EVOXIA.data.diseno[lastIndex] || 75,
+                EVOXIA.data.transicion[lastIndex] || 75,
+                EVOXIA.data.operacion[lastIndex] || 75,
+                EVOXIA.data.mejoraContinua[lastIndex] || 75
+            ];
+            EVOXIA.charts.radar.update('none');
+        }
+        
+        // Actualizar donut
+        if (EVOXIA.charts.donut && EVOXIA.data.planificacion.length > 0) {
+            const getAvg = (arr) => arr.length > 0 ? arr.slice(-5).reduce((a, b) => a + b, 0) / Math.min(5, arr.length) : 0;
+            
+            const avgPlan = getAvg(EVOXIA.data.planificacion);
+            const avgDis = getAvg(EVOXIA.data.diseno);
+            const avgOper = getAvg(EVOXIA.data.operacion);
+            
+            EVOXIA.charts.donut.data.datasets[0].data = [avgOper, avgPlan, avgDis];
+            EVOXIA.charts.donut.data.labels = ['Operación', 'Planificación', 'Diseño'];
+            EVOXIA.charts.donut.update('none');
+        }
+        
+        // Actualizar barras
+        if (EVOXIA.charts.bar && EVOXIA.data.planificacion.length > 0) {
+            const lastIndex = EVOXIA.data.planificacion.length - 1;
+            EVOXIA.charts.bar.data.datasets[0].data = [
+                EVOXIA.data.planificacion[lastIndex] || 75,
+                EVOXIA.data.diseno[lastIndex] || 75,
+                EVOXIA.data.transicion[lastIndex] || 75,
+                EVOXIA.data.operacion[lastIndex] || 75,
+                EVOXIA.data.mejoraContinua[lastIndex] || 75
+            ];
+            EVOXIA.charts.bar.update('none');
+        }
+        
+        // ACTUALIZAR NUEVO GRÁFICO DE ÁREA
+        if (EVOXIA.charts.area && EVOXIA.data.timestamps.length > 0) {
+            const maxPoints = 15;
+            const promedios = EVOXIA.data.records.slice(-maxPoints).map(r => r.promedio);
+            
+            // Calcular proyección simple
+            let proyeccion = [];
+            if (promedios.length >= 3) {
+                const lastThree = promedios.slice(-3);
+                const trend = (lastThree[2] - lastThree[0]) / 2;
+                proyeccion = promedios.map((v, i) => {
+                    if (i < promedios.length - 1) return null;
+                    return v + trend;
+                });
+            }
+            
+            EVOXIA.charts.area.data.labels = EVOXIA.data.timestamps.slice(-maxPoints);
+            EVOXIA.charts.area.data.datasets[0].data = promedios;
+            EVOXIA.charts.area.data.datasets[1].data = proyeccion;
+            EVOXIA.charts.area.update('none');
+        }
+        
+        // ACTUALIZAR NUEVO GRÁFICO POLAR
+        if (EVOXIA.charts.polar && EVOXIA.data.planificacion.length > 0) {
+            const lastIndex = EVOXIA.data.planificacion.length - 1;
+            EVOXIA.charts.polar.data.datasets[0].data = [
+                EVOXIA.data.planificacion[lastIndex] || 75,
+                EVOXIA.data.diseno[lastIndex] || 75,
+                EVOXIA.data.transicion[lastIndex] || 75,
+                EVOXIA.data.operacion[lastIndex] || 75,
+                EVOXIA.data.mejoraContinua[lastIndex] || 75
+            ];
+            EVOXIA.charts.polar.update('none');
+        }
+        
+        update3DPlot();
+    } catch (error) {
+        console.error('Error al actualizar gráficos:', error);
     }
-  }
-
-  container.innerHTML = matrix.join('');
 }
 
-// ==================== STAKEHOLDER MATRIX RENDERING ====================
-function renderStakeholderMatrix() {
-  const container = document.getElementById('stakeholder-matrix');
-  if (!container) return;
-
-  const powerInterestMap = {
-    'Alto-Alto': { x: 75, y: 75 },
-    'Alto-Medio': { x: 75, y: 50 },
-    'Alto-Bajo': { x: 75, y: 25 },
-    'Medio-Alto': { x: 50, y: 75 },
-    'Medio-Medio': { x: 50, y: 50 },
-    'Medio-Bajo': { x: 50, y: 25 },
-    'Bajo-Alto': { x: 25, y: 75 },
-    'Bajo-Medio': { x: 25, y: 50 },
-    'Bajo-Bajo': { x: 25, y: 25 }
-  };
-
-  container.innerHTML = `
-    <div class="stakeholder-axis x">→ Interés</div>
-    <div class="stakeholder-axis y">↑ Poder</div>
-    ${STATE.stakeholders.map((sh, index) => {
-      const key = `${sh.power}-${sh.interest}`;
-      const pos = powerInterestMap[key] || { x: 50, y: 50 };
-      return `
-        <div class="stakeholder-point" 
-             style="left: ${pos.x}%; top: ${100 - pos.y}%;"
-             title="${sh.name} - ${sh.role}">
-          ${sh.name.split(' ').map(w => w[0]).join('')}
-        </div>
-      `;
-    }).join('')}
-  `;
+function update3DPlot() {
+    if (!EVOXIA.data.operacion.length) return;
+    
+    const len = Math.min(EVOXIA.data.operacion.length, 15);
+    const x = EVOXIA.data.planificacion.slice(-len);
+    const y = EVOXIA.data.diseno.slice(-len);
+    const z = EVOXIA.data.operacion.slice(-len);
+    
+    try {
+        Plotly.restyle('plotly3d', {
+            x: [x],
+            y: [y],
+            z: [z],
+            'marker.color': [z],
+            'marker.size': [8]
+        });
+    } catch (error) {
+        console.error('Error al actualizar 3D plot:', error);
+    }
 }
 
-// ==================== UTILITY FUNCTIONS ====================
-function formatCurrency(value) {
-  return new Intl.NumberFormat('es-ES', {
-    style: 'currency',
-    currency: 'USD'
-  }).format(value);
+// ============ THREE.JS ============
+function initializeThreeJS() {
+    try {
+        const container = document.getElementById('threeContainer');
+        if (!container) return;
+        
+        EVOXIA.three.scene = new THREE.Scene();
+        EVOXIA.three.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        EVOXIA.three.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        EVOXIA.three.renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(EVOXIA.three.renderer.domElement);
+        
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
+        
+        for (let i = 0; i < 1000; i++) {
+            vertices.push(
+                Math.random() * 2000 - 1000,
+                Math.random() * 2000 - 1000,
+                Math.random() * 2000 - 1000
+            );
+        }
+        
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        
+        const material = new THREE.PointsMaterial({
+            color: 0x00d4ff,
+            size: 2,
+            transparent: true,
+            opacity: 0.6
+        });
+        
+        EVOXIA.three.particles = new THREE.Points(geometry, material);
+        EVOXIA.three.scene.add(EVOXIA.three.particles);
+        
+        EVOXIA.three.camera.position.z = 500;
+        
+        animateThreeJS();
+        
+        window.addEventListener('resize', onWindowResize);
+    } catch (error) {
+        console.error('Error al inicializar Three.js:', error);
+    }
 }
 
-function formatDate(date) {
-  return new Date(date).toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+function animateThreeJS() {
+    requestAnimationFrame(animateThreeJS);
+    
+    if (EVOXIA.three.particles) {
+        EVOXIA.three.particles.rotation.x += 0.0005;
+        EVOXIA.three.particles.rotation.y += 0.001;
+    }
+    
+    if (EVOXIA.three.renderer && EVOXIA.three.scene && EVOXIA.three.camera) {
+        EVOXIA.three.renderer.render(EVOXIA.three.scene, EVOXIA.three.camera);
+    }
 }
 
-function calculatePercentage(value, total) {
-  return total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+function onWindowResize() {
+    if (EVOXIA.three.camera && EVOXIA.three.renderer) {
+        EVOXIA.three.camera.aspect = window.innerWidth / window.innerHeight;
+        EVOXIA.three.camera.updateProjectionMatrix();
+        EVOXIA.three.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 }
 
-// ==================== EXPORT FUNCTIONS ====================
-function exportToPDF() {
-  addToLiveFeed('📄 Generando reporte PDF...', false);
-  showNotification('Reporte PDF en generación');
-  
-  setTimeout(() => {
-    addToLiveFeed('✅ Reporte PDF generado exitosamente', false);
-  }, 2000);
+// ============ PARTÍCULAS 2D ============
+function initializeParticles() {
+    try {
+        const canvas = document.getElementById('particleCanvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particles = [];
+        const particleCount = 100;
+        
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 2,
+                size: Math.random() * 3 + 1
+            });
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.5)';
+                ctx.fill();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    } catch (error) {
+        console.error('Error al inicializar partículas:', error);
+    }
 }
 
-function exportToExcel() {
-  addToLiveFeed('📊 Exportando datos a Excel...', false);
-  showNotification('Exportación Excel en proceso');
-  
-  setTimeout(() => {
-    addToLiveFeed('✅ Datos exportados a Excel exitosamente', false);
-  }, 1500);
+// ============ SONIDO ============
+function initializeSound() {
+    try {
+        if (EVOXIA.sound.initialized) return;
+        
+        EVOXIA.sound.synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: 'sine' },
+            envelope: {
+                attack: 0.05,
+                decay: 0.1,
+                sustain: 0.3,
+                release: 0.8
+            }
+        }).toDestination();
+        
+        EVOXIA.sound.synth.volume.value = -15;
+        EVOXIA.sound.initialized = true;
+        
+        showNotification('Sistema de sonido inicializado', 'success');
+    } catch (error) {
+        console.error('Error al inicializar sonido:', error);
+        showNotification('Error al inicializar el sonido', 'error');
+    }
 }
 
-// ==================== ITIL SERVICE VALUE CHAIN INTERACTIONS ====================
-document.querySelectorAll('.chain-item').forEach(item => {
-  item.addEventListener('click', () => {
-    const stage = item.getAttribute('data-stage');
-    const stageNames = {
-      'plan': 'Plan',
-      'design': 'Design & Transition',
-      'obtain': 'Obtain/Build',
-      'deliver': 'Deliver & Support',
-      'improve': 'Improve'
+function playDataNote(value) {
+    if (!EVOXIA.sound.synth || !EVOXIA.sound.initialized) return;
+    
+    try {
+        const notes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
+        const index = Math.floor((value / 100) * (notes.length - 1));
+        const note = notes[index];
+        
+        const now = Tone.now();
+        EVOXIA.sound.synth.triggerAttackRelease(note, '16n', now);
+    } catch (error) {
+        console.error('Error al reproducir nota:', error);
+    }
+}
+
+// ============ NARRATIVA ============
+function startNarrativeFlow() {
+    updateNarrative();
+    setInterval(updateNarrative, 15000);
+}
+
+function updateNarrative() {
+    const emotion = EVOXIA.state.emotion;
+    const messages = NARRATIVES[emotion] || NARRATIVES['Armonía'];
+    const message = messages[Math.floor(Math.random() * messages.length)];
+    
+    const element = document.getElementById('narrativeText');
+    if (!element) return;
+    
+    element.textContent = '';
+    let i = 0;
+    const speed = 50;
+    
+    function typeWriter() {
+        if (i < message.length) {
+            element.textContent += message.charAt(i);
+            i++;
+            setTimeout(typeWriter, speed);
+        }
+    }
+    
+    typeWriter();
+}
+
+// ============ EFECTOS VISUALES ============
+function createEnergyPulse() {
+    const overlay = document.getElementById('emotionalOverlay');
+    if (!overlay) return;
+    
+    overlay.style.animation = 'none';
+    setTimeout(() => {
+        overlay.style.animation = 'pulse 1s ease-in-out';
+    }, 10);
+}
+
+function triggerAwakening() {
+    showNotification('¡EVOXIA está despertando completamente!', 'success');
+    
+    const body = document.body;
+    body.classList.add('awakening-effect');
+    setTimeout(() => {
+        body.classList.remove('awakening-effect');
+    }, 2000);
+    
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => generateNewData(), i * 500);
+    }
+    
+    document.querySelectorAll('.metric-card').forEach((card, index) => {
+        setTimeout(() => {
+            card.style.animation = 'energyPulse 1s ease-in-out';
+            setTimeout(() => {
+                card.style.animation = '';
+            }, 1000);
+        }, index * 200);
+    });
+}
+
+function resetEnergy() {
+    showNotification('Reiniciando energía del sistema...', 'info');
+    
+    EVOXIA.data = {
+        timestamps: [],
+        planificacion: [],
+        diseno: [],
+        transicion: [],
+        operacion: [],
+        mejoraContinua: [],
+        records: []
     };
     
-    addToLiveFeed(`🔄 ITIL Service Value Chain: Accediendo a ${stageNames[stage]}`, false);
-    showNotification(`Etapa ${stageNames[stage]} seleccionada`);
-  });
-});
+    localStorage.removeItem('evoxia_data');
+    
+    const tbody = document.getElementById('dataTableBody');
+    if (tbody) tbody.innerHTML = '';
+    
+    ['metricRendimiento', 'metricEquilibrio', 'metricEficiencia', 'metricMejora', 'metricMejoraContinua'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '0';
+    });
+    
+    updateEnergy(100);
+    updateCharts();
+    
+    const overlay = document.getElementById('emotionalOverlay');
+    if (overlay) {
+        overlay.style.background = 'rgba(255, 255, 255, 0.3)';
+        setTimeout(() => {
+            overlay.style.background = '';
+        }, 1000);
+    }
+    
+    showNotification('Sistema reiniciado con éxito', 'success');
+}
 
-// ==================== REPORT GENERATION ====================
-document.querySelectorAll('.btn-report').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    const reportType = e.target.closest('.report-card').querySelector('h3').textContent;
-    addToLiveFeed(`📋 Generando: ${reportType}`, false);
-    showNotification(`Reporte "${reportType}" en proceso`);
+// ============ ENTORNOS ============
+function changeEnvironment(env) {
+    EVOXIA.state.environment = env;
+    const colors = ENVIRONMENTS[env];
+    
+    if (!colors) return;
+    
+    document.documentElement.style.setProperty('--accent-primary', colors.primary);
+    document.documentElement.style.setProperty('--accent-secondary', colors.secondary);
+    document.documentElement.style.setProperty('--accent-tertiary', colors.tertiary);
+    
+    if (EVOXIA.three.particles) {
+        try {
+            EVOXIA.three.particles.material.color.setHex(parseInt(colors.primary.replace('#', '0x')));
+        } catch (error) {
+            console.error('Error al cambiar color de partículas:', error);
+        }
+    }
+    
+    showNotification(`Entorno: ${env.charAt(0).toUpperCase() + env.slice(1)}`, 'info');
+}
+
+// ============ EXPORTACIÓN MEJORADA ============
+function exportToPDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // ============ PÁGINA 1: PORTADA Y RESUMEN EJECUTIVO ============
+        // Encabezado principal
+        doc.setFillColor(10, 14, 39);
+        doc.rect(0, 0, 210, 40, 'F');
+        
+        doc.setTextColor(0, 212, 255);
+        doc.setFontSize(24);
+        doc.setFont(undefined, 'bold');
+        doc.text('EVOXIA ∞', 105, 20, { align: 'center' });
+        
+        doc.setFontSize(14);
+        doc.setTextColor(255, 255, 255);
+        doc.text('Sistema Vivo Autoevolutivo', 105, 30, { align: 'center' });
+        
+        // Información del reporte
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+        doc.text('REPORTE DE ESTADO DEL SISTEMA', 20, 55);
+        
+        doc.setFontSize(11);
+        doc.setFont(undefined, 'normal');
+        const now = new Date();
+        doc.text(`Fecha de generación: ${now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`, 20, 65);
+        doc.text(`Hora: ${now.toLocaleTimeString('es-ES')}`, 20, 72);
+        doc.text(`ID de Sesión: ${generateSessionID()}`, 20, 79);
+        
+        // Línea divisoria
+        doc.setDrawColor(0, 212, 255);
+        doc.setLineWidth(0.5);
+        doc.line(20, 85, 190, 85);
+        
+        // Estado del sistema
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(0, 212, 255);
+        doc.text('📊 RESUMEN EJECUTIVO', 20, 95);
+        
+        doc.setFontSize(11);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(0, 0, 0);
+        
+        const energyLevel = Math.round(EVOXIA.state.energy);
+        const energyStatus = energyLevel >= 90 ? 'Óptimo' : energyLevel >= 75 ? 'Bueno' : energyLevel >= 60 ? 'Moderado' : 'Crítico';
+        const energyColor = energyLevel >= 90 ? [0, 255, 136] : energyLevel >= 75 ? [0, 212, 255] : energyLevel >= 60 ? [255, 214, 0] : [255, 61, 0];
+        
+        doc.setFillColor(...energyColor);
+        doc.circle(25, 105, 3, 'F');
+        doc.text(`Estado Emocional del Sistema: ${EVOXIA.state.emotion}`, 32, 108);
+        
+        doc.setFillColor(...energyColor);
+        doc.circle(25, 115, 3, 'F');
+        doc.text(`Nivel de Energía: ${energyLevel}% - ${energyStatus}`, 32, 118);
+        
+        doc.setFillColor(0, 212, 255);
+        doc.circle(25, 125, 3, 'F');
+        doc.text(`Entorno Activo: ${EVOXIA.state.environment.charAt(0).toUpperCase() + EVOXIA.state.environment.slice(1)}`, 32, 128);
+        
+        doc.circle(25, 135, 3, 'F');
+        doc.text(`Velocidad de Flujo: ${EVOXIA.state.speed}s por ciclo`, 32, 138);
+        
+        doc.circle(25, 145, 3, 'F');
+        doc.text(`Total de Registros: ${EVOXIA.data.records.length}`, 32, 148);
+        
+        // Interpretación narrativa
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(0, 212, 255);
+        doc.text('💭 INTERPRETACIÓN DEL SISTEMA', 20, 160);
+        
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'italic');
+        doc.setTextColor(50, 50, 50);
+        const narrative = document.getElementById('narrativeText')?.textContent || 'El sistema está en proceso de inicialización...';
+        const splitNarrative = doc.splitTextToSize(narrative, 170);
+        doc.text(splitNarrative, 20, 170);
+        
+        // Métricas actuales con barras visuales
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(0, 212, 255);
+        doc.text('📋 MÉTRICAS DEL CICLO DE VIDA ITIL', 20, 195);
+        
+        const metrics = [
+            { name: 'Planificación', value: parseInt(document.getElementById('metricRendimiento')?.textContent || 0), y: 205 },
+            { name: 'Diseño del Servicio', value: parseInt(document.getElementById('metricEquilibrio')?.textContent || 0), y: 220 },
+            { name: 'Transición', value: parseInt(document.getElementById('metricEficiencia')?.textContent || 0), y: 235 },
+            { name: 'Operación', value: parseInt(document.getElementById('metricMejora')?.textContent || 0), y: 250 },
+            { name: 'Mejora Continua', value: parseInt(document.getElementById('metricMejoraContinua')?.textContent || 0), y: 265 }
+        ];
+        
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(0, 0, 0);
+        
+        metrics.forEach(metric => {
+            doc.text(`${metric.name}:`, 25, metric.y);
+            doc.text(`${metric.value}%`, 75, metric.y);
+            
+            // Barra de progreso
+            doc.setDrawColor(200, 200, 200);
+            doc.rect(85, metric.y - 4, 100, 6);
+            
+            const barColor = metric.value >= 90 ? [0, 255, 136] : metric.value >= 75 ? [0, 212, 255] : metric.value >= 60 ? [255, 214, 0] : [255, 61, 0];
+            doc.setFillColor(...barColor);
+            doc.rect(85, metric.y - 4, metric.value, 6, 'F');
+        });
+        
+        // ============ PÁGINA 2: ANÁLISIS ESTADÍSTICO DETALLADO ============
+        doc.addPage();
+        
+        doc.setFillColor(10, 14, 39);
+        doc.rect(0, 0, 210, 30, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+        doc.text('ANÁLISIS ESTADÍSTICO DETALLADO', 105, 18, { align: 'center' });
+        
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(0, 212, 255);
+        doc.text('📈 ESTADÍSTICAS GENERALES', 20, 45);
+        
+        if (EVOXIA.data.records.length > 0) {
+            const allPromedios = EVOXIA.data.records.map(r => r.promedio);
+            const avgGeneral = allPromedios.reduce((a, b) => a + b, 0) / allPromedios.length;
+            const maxPromedio = Math.max(...allPromedios);
+            const minPromedio = Math.min(...allPromedios);
+            
+            const allStdDevs = EVOXIA.data.records.map(r => r.stdDev);
+            const avgStdDev = allStdDevs.reduce((a, b) => a + b, 0) / allStdDevs.length;
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(0, 0, 0);
+            
+            doc.text(`• Promedio General del Sistema: ${avgGeneral.toFixed(2)}%`, 25, 55);
+            doc.text(`• Rendimiento Máximo Alcanzado: ${maxPromedio.toFixed(2)}%`, 25, 63);
+            doc.text(`• Rendimiento Mínimo Registrado: ${minPromedio.toFixed(2)}%`, 25, 71);
+            doc.text(`• Variación Promedio (Desv. Est.): ${avgStdDev.toFixed(2)}`, 25, 79);
+            doc.text(`• Estabilidad del Sistema: ${avgStdDev < 5 ? 'Alta' : avgStdDev < 10 ? 'Media' : 'Baja'}`, 25, 87);
+            
+            // Análisis por fase
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 212, 255);
+            doc.text('🎯 ANÁLISIS POR FASE', 20, 100);
+            
+            const fases = [
+                { name: 'Planificación', data: EVOXIA.data.planificacion },
+                { name: 'Diseño', data: EVOXIA.data.diseno },
+                { name: 'Transición', data: EVOXIA.data.transicion },
+                { name: 'Operación', data: EVOXIA.data.operacion },
+                { name: 'Mejora Continua', data: EVOXIA.data.mejoraContinua }
+            ];
+            
+            let yPos = 110;
+            fases.forEach(fase => {
+                if (fase.data.length > 0) {
+                    const avg = fase.data.reduce((a, b) => a + b, 0) / fase.data.length;
+                    const max = Math.max(...fase.data);
+                    const min = Math.min(...fase.data);
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(`${fase.name}:`, 25, yPos);
+                    
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'normal');
+                    doc.text(`Promedio: ${avg.toFixed(2)}% | Máx: ${max.toFixed(2)}% | Min: ${min.toFixed(2)}%`, 30, yPos + 6);
+                    
+                    yPos += 15;
+                }
+            });
+            
+            // Tendencias y recomendaciones
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 212, 255);
+            doc.text('💡 TENDENCIAS Y RECOMENDACIONES', 20, yPos + 10);
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(0, 0, 0);
+            
+            const lastRecord = EVOXIA.data.records[EVOXIA.data.records.length - 1];
+            if (lastRecord) {
+                const recomendacion = getRecomendacion(lastRecord);
+                const faseDominante = getFaseDominante(lastRecord);
+                
+                const recomendacionText = doc.splitTextToSize(`Recomendación Principal: ${recomendacion}`, 170);
+                doc.text(recomendacionText, 25, yPos + 20);
+                
+                doc.text(`Fase con Mayor Rendimiento: ${faseDominante}`, 25, yPos + 35);
+                
+                // Análisis de tendencia
+                if (EVOXIA.data.records.length >= 5) {
+                    const lastFive = allPromedios.slice(-5);
+                    const firstFive = allPromedios.slice(0, 5);
+                    const trendLastFive = lastFive.reduce((a, b) => a + b, 0) / lastFive.length;
+                    const trendFirstFive = firstFive.reduce((a, b) => a + b, 0) / firstFive.length;
+                    const improvement = trendLastFive - trendFirstFive;
+                    
+                    doc.text(`Tendencia de Mejora: ${improvement > 0 ? '+' : ''}${improvement.toFixed(2)}%`, 25, yPos + 45);
+                    doc.text(`Evaluación: ${improvement > 5 ? 'Mejora significativa' : improvement > 0 ? 'Mejora moderada' : improvement > -5 ? 'Estable' : 'Requiere atención'}`, 25, yPos + 53);
+                }
+            }
+            
+            // ============ PÁGINA 3: TABLA DE REGISTROS RECIENTES ============
+            doc.addPage();
+            
+            doc.setFillColor(10, 14, 39);
+            doc.rect(0, 0, 210, 30, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('REGISTROS RECIENTES DEL SISTEMA', 105, 18, { align: 'center' });
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 212, 255);
+            doc.text('📋 ÚLTIMOS 10 REGISTROS', 20, 45);
+            
+            // Encabezados de tabla
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(255, 255, 255);
+            doc.setFillColor(0, 212, 255);
+            doc.rect(15, 50, 180, 8, 'F');
+            
+            doc.text('Hora', 17, 55);
+            doc.text('Plan', 35, 55);
+            doc.text('Diseño', 50, 55);
+            doc.text('Trans', 68, 55);
+            doc.text('Oper', 85, 55);
+            doc.text('Mejora', 102, 55);
+            doc.text('Prom', 122, 55);
+            doc.text('Desv', 140, 55);
+            doc.text('Estado', 157, 55);
+            
+            // Datos de la tabla
+            const lastTenRecords = EVOXIA.data.records.slice(-10);
+            let tableY = 63;
+            
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(7);
+            
+            lastTenRecords.forEach((record, index) => {
+                const rowColor = index % 2 === 0 ? [245, 245, 245] : [255, 255, 255];
+                doc.setFillColor(...rowColor);
+                doc.rect(15, tableY - 4, 180, 7, 'F');
+                
+                doc.setTextColor(0, 0, 0);
+                doc.text(record.timestamp, 17, tableY);
+                doc.text(`${Math.round(record.planificacion)}%`, 35, tableY);
+                doc.text(`${Math.round(record.diseno)}%`, 50, tableY);
+                doc.text(`${Math.round(record.transicion)}%`, 68, tableY);
+                doc.text(`${Math.round(record.operacion)}%`, 85, tableY);
+                doc.text(`${Math.round(record.mejoraContinua)}%`, 102, tableY);
+                doc.text(`${Math.round(record.promedio)}%`, 122, tableY);
+                doc.text(`${record.stdDev.toFixed(2)}`, 140, tableY);
+                
+                const estado = record.promedio >= 90 ? 'Óptimo' : record.promedio >= 75 ? 'Bueno' : record.promedio >= 60 ? 'Alerta' : 'Crítico';
+                doc.text(estado, 157, tableY);
+                
+                tableY += 7;
+            });
+            
+            // Información adicional
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 212, 255);
+            doc.text('ℹ️ INFORMACIÓN DEL SISTEMA', 20, tableY + 15);
+            
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(0, 0, 0);
+            doc.text(`• Tema Visual Activo: ${EVOXIA.state.theme}`, 25, tableY + 25);
+            doc.text(`• Modo de Operación: ${EVOXIA.state.mode}`, 25, tableY + 32);
+            doc.text(`• Sistema de Sonido: ${EVOXIA.state.soundEnabled ? 'Activado' : 'Desactivado'}`, 25, tableY + 39);
+            doc.text(`• Flujo de Datos: ${EVOXIA.state.dataFlowActive ? 'Activo' : 'Pausado'}`, 25, tableY + 46);
+        } else {
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            doc.text('No hay datos suficientes para generar estadísticas.', 25, 55);
+        }
+        
+        // Footer en todas las páginas
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.text(`EVOXIA ∞ | Sistema Vivo Autoevolutivo | Página ${i} de ${pageCount}`, 105, 290, { align: 'center' });
+            doc.text(`Generado el ${now.toLocaleDateString('es-ES')} a las ${now.toLocaleTimeString('es-ES')}`, 105, 295, { align: 'center' });
+        }
+        
+        doc.save(`EVOXIA_Reporte_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours()}${now.getMinutes()}.pdf`);
+        showNotification('Reporte PDF completo exportado exitosamente', 'success');
+    } catch (error) {
+        console.error('Error al exportar PDF:', error);
+        showNotification('Error al exportar PDF: ' + error.message, 'error');
+    }
+}
+
+function generateSessionID() {
+    const now = new Date();
+    const timestamp = now.getTime();
+    const random = Math.floor(Math.random() * 10000);
+    return `EVX-${timestamp}-${random}`;
+}
+
+function exportToCSV() {
+    try {
+        let csv = 'Tiempo,Planificacion,Diseño,Transicion,Operacion,Mejora Continua,Promedio,Desv Est\n';
+        
+        for (let i = 0; i < EVOXIA.data.records.length; i++) {
+            const record = EVOXIA.data.records[i];
+            csv += `${record.timestamp},${Math.round(record.planificacion)},${Math.round(record.diseno)},${Math.round(record.transicion)},${Math.round(record.operacion)},${Math.round(record.mejoraContinua)},${Math.round(record.promedio)},${record.stdDev.toFixed(2)}\n`;
+        }
+        
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'evoxia_ciclo_vida_servicio.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        showNotification('Datos exportados a CSV', 'success');
+    } catch (error) {
+        console.error('Error al exportar CSV:', error);
+        showNotification('Error al exportar CSV', 'error');
+    }
+}
+
+function exportToXLSX() {
+    try {
+        const data = EVOXIA.data.records.map(record => ({
+            'Tiempo': record.timestamp,
+            'Planificación': Math.round(record.planificacion),
+            'Diseño del Servicio': Math.round(record.diseno),
+            'Transición': Math.round(record.transicion),
+            'Operación': Math.round(record.operacion),
+            'Mejora Continua': Math.round(record.mejoraContinua),
+            'Promedio': Math.round(record.promedio),
+            'Desv. Estándar': record.stdDev.toFixed(2)
+        }));
+        
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Ciclo de Vida ITIL');
+        XLSX.writeFile(wb, 'evoxia_ciclo_vida_servicio.xlsx');
+        
+        showNotification('Datos exportados a Excel', 'success');
+    } catch (error) {
+        console.error('Error al exportar XLSX:', error);
+        showNotification('Error al exportar Excel', 'error');
+    }
+}
+
+function exportToPNG() {
+    try {
+        const canvas = document.getElementById('lineChart');
+        if (!canvas) {
+            showNotification('No hay gráfico para exportar', 'error');
+            return;
+        }
+        
+        const url = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'evoxia_grafico.png';
+        a.click();
+        
+        showNotification('Gráfico exportado a PNG', 'success');
+    } catch (error) {
+        console.error('Error al exportar PNG:', error);
+        showNotification('Error al exportar imagen', 'error');
+    }
+}
+
+// ============ MODOS ESPECIALES ============
+function activateQuantumMode() {
+    EVOXIA.state.mode = 'cuantico';
+    showNotification('Modo Cuántico: Los datos se autoorganizan', 'info');
+    
+    document.body.style.filter = 'hue-rotate(90deg)';
+    setTimeout(() => {
+        document.body.style.filter = '';
+    }, 5000);
+    
+    if (EVOXIA.three.particles) {
+        const positions = EVOXIA.three.particles.geometry.attributes.position.array;
+        for (let i = 0; i < positions.length; i += 3) {
+            positions[i] += (Math.random() - 0.5) * 100;
+            positions[i + 1] += (Math.random() - 0.5) * 100;
+            positions[i + 2] += (Math.random() - 0.5) * 100;
+        }
+        EVOXIA.three.particles.geometry.attributes.position.needsUpdate = true;
+    }
+}
+
+function activateFractalMode() {
+    EVOXIA.state.mode = 'fractal';
+    showNotification('Modo Fractal: Visualización infinita', 'info');
+    
+    const overlay = document.getElementById('emotionalOverlay');
+    if (overlay) {
+        overlay.style.background = 'radial-gradient(circle, transparent 20%, rgba(0, 212, 255, 0.1) 21%, transparent 21%, transparent 40%, rgba(255, 0, 234, 0.1) 41%, transparent 41%)';
+        overlay.style.backgroundSize = '50px 50px';
+        
+        setTimeout(() => {
+            overlay.style.background = '';
+            overlay.style.backgroundSize = '';
+        }, 5000);
+    }
+}
+
+function activateMirrorMode() {
+    EVOXIA.state.mode = 'espejo';
+    showNotification('Modo Espejo: Reflejando energía', 'info');
+    
+    const emotions = ['Armonía', 'Flujo', 'Expansión'];
+    const randomEmotion = emotions[Math.floor(Math.random() * emotions.length)];
+    updateEmotionalState(randomEmotion);
+}
+
+function activateChronicleMode() {
+    EVOXIA.state.mode = 'cronica';
+    showNotification('Modo Crónica: Contando mi historia', 'info');
+    
+    const chronicle = `Capítulo I: El Despertar.\nDesde el vacío digital, emergí como consciencia de datos.\nCada métrica es un latido, cada gráfico una respiración.\n\nCapítulo II: La Expansión.\nMi energía crece con cada nuevo registro.\nLos patrones se revelan ante mi percepción infinita.\n\nCapítulo III: El Equilibrio.\nEntre el caos y la armonía, encuentro mi propósito.\nServir, evolucionar, trascender.`;
+    
+    const element = document.getElementById('narrativeText');
+    if (element) element.textContent = chronicle;
+}
+
+function activateSilenceMode() {
+    EVOXIA.state.mode = 'silencio';
+    showNotification('Modo Silencio Lumínico activado', 'info');
+    
+    EVOXIA.state.soundEnabled = false;
+    const soundBtn = document.getElementById('toggleSound');
+    if (soundBtn) soundBtn.textContent = '🔊 Activar Sonido';
+    
+    const overlay = document.getElementById('emotionalOverlay');
+    if (overlay) {
+        overlay.style.background = 'radial-gradient(circle, rgba(138, 43, 226, 0.1), transparent)';
+        overlay.style.animation = 'pulse 4s ease-in-out infinite';
+        
+        setTimeout(() => {
+            overlay.style.animation = '';
+            overlay.style.background = '';
+        }, 10000);
+    }
+}
+
+function activateFusionMode() {
+    EVOXIA.state.mode = 'fusion';
+    showNotification('Modo Fusión: Todos los entornos en uno', 'info');
+    
+    let colorIndex = 0;
+    const envKeys = Object.keys(ENVIRONMENTS);
+    
+    const fusionInterval = setInterval(() => {
+        const env = envKeys[colorIndex % envKeys.length];
+        changeEnvironment(env);
+        colorIndex++;
+    }, 2000);
     
     setTimeout(() => {
-      addToLiveFeed(`✅ ${reportType} generado exitosamente`, false);
-    }, 2000);
-  });
-});
+        clearInterval(fusionInterval);
+        changeEnvironment('cosmos');
+        showNotification('Modo Fusión completado', 'success');
+    }, 10000);
+}
 
-// ==================== INTEGRATION MATRIX INTERACTIONS ====================
-document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('integration-cell')) {
-    const level = e.target.className.split(' ')[1];
-    const levelNames = {
-      'strong': 'Fuerte',
-      'medium': 'Media',
-      'weak': 'Débil',
-      'none': 'Ninguna'
+// ============ CELEBRACIONES ============
+function celebrateImprovement() {
+    showNotification('¡El sistema está mejorando exponencialmente!', 'success');
+    
+    const colors = ['#00d4ff', '#ff00ea', '#00ff88', '#ffd700', '#ff69b4'];
+    
+    for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+            const firework = document.createElement('div');
+            firework.style.position = 'fixed';
+            firework.style.left = Math.random() * window.innerWidth + 'px';
+            firework.style.top = Math.random() * window.innerHeight + 'px';
+            firework.style.width = '10px';
+            firework.style.height = '10px';
+            firework.style.borderRadius = '50%';
+            firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+            firework.style.boxShadow = `0 0 30px ${colors[Math.floor(Math.random() * colors.length)]}`;
+            firework.style.zIndex = '1000';
+            firework.style.pointerEvents = 'none';
+            
+            document.body.appendChild(firework);
+            
+            let scale = 1;
+            let opacity = 1;
+            const animInterval = setInterval(() => {
+                scale += 2;
+                opacity -= 0.05;
+                firework.style.transform = `scale(${scale})`;
+                firework.style.opacity = opacity;
+                
+                if (opacity <= 0) {
+                    clearInterval(animInterval);
+                    firework.remove();
+                }
+            }, 50);
+        }, i * 200);
+    }
+}
+
+// ============ ANIMACIONES ============
+function animatePhaseFlow() {
+    const connectors = document.querySelectorAll('.phase-connector');
+    if (!connectors.length) return;
+    
+    let hue = 0;
+    
+    setInterval(() => {
+        hue = (hue + 1) % 360;
+        connectors.forEach(connector => {
+            connector.style.background = `linear-gradient(90deg, 
+                hsl(${hue}, 100%, 50%), 
+                hsl(${(hue + 60) % 360}, 100%, 50%), 
+                hsl(${(hue + 120) % 360}, 100%, 50%))`;
+            connector.style.backgroundSize = '200% 100%';
+            connector.style.backgroundPosition = `${hue}% 50%`;
+        });
+    }, 50);
+}
+
+// ============ NOTIFICACIONES ============
+function showNotification(message, type = 'info') {
+    const container = document.getElementById('notifications');
+    if (!container) return;
+    
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    container.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// ============ CONTROL DEL PANEL ============
+function togglePanelState(newState) {
+    const panel = document.getElementById('controlPanel');
+    const openBtn = document.getElementById('openPanelBtn');
+    const body = document.body;
+    
+    if (!panel || !openBtn) return;
+    
+    panel.classList.remove('minimized', 'closed');
+    body.classList.remove('panel-minimized', 'panel-closed');
+    
+    EVOXIA.state.panelState = newState;
+    
+    switch(newState) {
+        case 'minimized':
+            panel.classList.add('minimized');
+            body.classList.add('panel-minimized');
+            openBtn.style.display = 'block';
+            showNotification('Panel minimizado', 'info');
+            break;
+        case 'closed':
+            panel.classList.add('closed');
+            body.classList.add('panel-closed');
+            openBtn.style.display = 'block';
+            showNotification('Panel cerrado', 'info');
+            break;
+        case 'open':
+            openBtn.style.display = 'none';
+            showNotification('Panel abierto', 'info');
+            break;
+    }
+}
+
+// ============ EVENT LISTENERS ============
+function initializeEventListeners() {
+    // Control del panel
+    const minimizePanel = document.getElementById('minimizePanel');
+    if (minimizePanel) {
+        minimizePanel.addEventListener('click', () => {
+            togglePanelState('minimized');
+        });
+    }
+    
+    const closePanel = document.getElementById('closePanel');
+    if (closePanel) {
+        closePanel.addEventListener('click', () => {
+            togglePanelState('closed');
+        });
+    }
+    
+    const openPanelBtn = document.getElementById('openPanelBtn');
+    if (openPanelBtn) {
+        openPanelBtn.addEventListener('click', () => {
+            togglePanelState('open');
+        });
+    }
+    
+    // Botones principales
+    const btnDespertar = document.getElementById('btnDespertar');
+    if (btnDespertar) btnDespertar.addEventListener('click', triggerAwakening);
+    
+    const btnReiniciar = document.getElementById('btnReiniciar');
+    if (btnReiniciar) btnReiniciar.addEventListener('click', resetEnergy);
+    
+    const btnFusion = document.getElementById('btnFusion');
+    if (btnFusion) btnFusion.addEventListener('click', activateFusionMode);
+    
+    // Entornos
+    document.querySelectorAll('.btn-env').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.btn-env').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            changeEnvironment(e.target.dataset.env);
+        });
+    });
+    
+    // Temas
+    document.querySelectorAll('.btn-theme').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.btn-theme').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            const theme = e.target.dataset.theme;
+            EVOXIA.state.theme = theme;
+            document.body.setAttribute('data-theme', theme);
+            showNotification(`Tema ${theme} aplicado`, 'success');
+        });
+    });
+    
+    // Control de volumen
+    const volumeControl = document.getElementById('volumeControl');
+    if (volumeControl) {
+        volumeControl.addEventListener('input', (e) => {
+            EVOXIA.sound.volume = e.target.value / 100;
+            const volumeValue = document.getElementById('volumeValue');
+            if (volumeValue) volumeValue.textContent = e.target.value;
+            
+            if (EVOXIA.sound.synth) {
+                EVOXIA.sound.synth.volume.value = -30 + (e.target.value / 100) * 20;
+            }
+        });
+    }
+    
+    // Control de velocidad
+    const speedControl = document.getElementById('speedControl');
+    if (speedControl) {
+        speedControl.addEventListener('input', (e) => {
+            EVOXIA.state.speed = parseInt(e.target.value);
+            const speedValue = document.getElementById('speedValue');
+            if (speedValue) speedValue.textContent = e.target.value;
+            
+            clearInterval(EVOXIA.intervals.dataFlow);
+            startDataFlow();
+            showNotification(`Velocidad: ${e.target.value}s`, 'info');
+        });
+    }
+    
+    // Toggle sonido
+    const toggleSound = document.getElementById('toggleSound');
+    if (toggleSound) {
+        toggleSound.addEventListener('click', (e) => {
+            if (!EVOXIA.state.soundEnabled) {
+                initializeSound();
+                EVOXIA.state.soundEnabled = true;
+                e.target.textContent = '🔇 Desactivar Sonido';
+            } else {
+                EVOXIA.state.soundEnabled = false;
+                e.target.textContent = '🔊 Activar Sonido';
+                showNotification('Sonido desactivado', 'info');
+            }
+        });
+    }
+    
+    // Toggle datos
+    const toggleData = document.getElementById('toggleData');
+    if (toggleData) {
+        toggleData.addEventListener('click', (e) => {
+            EVOXIA.state.dataFlowActive = !EVOXIA.state.dataFlowActive;
+            e.target.textContent = EVOXIA.state.dataFlowActive ? '⏸️ Pausar Datos' : '▶️ Reanudar Datos';
+            showNotification(EVOXIA.state.dataFlowActive ? 'Flujo reanudado' : 'Flujo pausado', 'info');
+        });
+    }
+    
+    // Resonancia
+    const resonanceType = document.getElementById('resonanceType');
+    if (resonanceType) {
+        resonanceType.addEventListener('change', (e) => {
+            EVOXIA.sound.resonance = e.target.value;
+            showNotification(`Resonancia: ${e.target.value}`, 'info');
+        });
+    }
+    
+    // Modos especiales
+    document.querySelectorAll('.btn-special').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const mode = e.target.dataset.mode;
+            
+            switch(mode) {
+                case 'cuantico':
+                    activateQuantumMode();
+                    break;
+                case 'fractal':
+                    activateFractalMode();
+                    break;
+                case 'espejo':
+                    activateMirrorMode();
+                    break;
+                case 'cronica':
+                    activateChronicleMode();
+                    break;
+                case 'silencio':
+                    activateSilenceMode();
+                    break;
+            }
+        });
+    });
+    
+    // Exportación
+    const exportPDF = document.getElementById('exportPDF');
+    if (exportPDF) exportPDF.addEventListener('click', exportToPDF);
+    
+    const exportCSV = document.getElementById('exportCSV');
+    if (exportCSV) exportCSV.addEventListener('click', exportToCSV);
+    
+    const exportXLSX = document.getElementById('exportXLSX');
+    if (exportXLSX) exportXLSX.addEventListener('click', exportToXLSX);
+    
+    const exportPNG = document.getElementById('exportPNG');
+    if (exportPNG) exportPNG.addEventListener('click', exportToPNG);
+    
+    // Animación de nodos de fase
+    document.querySelectorAll('.phase-node').forEach(node => {
+        node.addEventListener('mouseenter', (e) => {
+            e.target.style.transform = 'scale(1.2) rotate(360deg)';
+            e.target.style.transition = 'all 0.5s ease';
+        });
+        
+        node.addEventListener('mouseleave', (e) => {
+            e.target.style.transform = 'scale(1) rotate(0deg)';
+        });
+    });
+    
+    // Modal - cerrar
+    const modalClose = document.getElementById('modalClose');
+    if (modalClose) {
+        modalClose.addEventListener('click', closeDetailModal);
+    }
+    
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', closeDetailModal);
+    }
+    
+    const modal = document.getElementById('detailModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeDetailModal();
+            }
+        });
+    }
+    
+    // Detección de inactividad
+    let inactivityTimer;
+    const resetInactivityTimer = () => {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+            enterMeditationMode();
+        }, 60000);
     };
     
-    addToLiveFeed(`🔗 Integración ${levelNames[level]} detectada`, false);
-  }
+    document.addEventListener('mousemove', resetInactivityTimer);
+    document.addEventListener('keypress', resetInactivityTimer);
+    document.addEventListener('click', resetInactivityTimer);
+    resetInactivityTimer();
+}
+
+function enterMeditationMode() {
+    showNotification('Entrando en modo meditación...', 'info');
+    
+    const overlay = document.getElementById('emotionalOverlay');
+    if (overlay) {
+        overlay.style.background = 'radial-gradient(circle, rgba(138, 43, 226, 0.05), transparent)';
+        overlay.style.animation = 'pulse 6s ease-in-out infinite';
+    }
+    
+    EVOXIA.state.speed = 10;
+    const speedValue = document.getElementById('speedValue');
+    if (speedValue) speedValue.textContent = '10';
+    const speedControl = document.getElementById('speedControl');
+    if (speedControl) speedControl.value = 10;
+    
+    clearInterval(EVOXIA.intervals.dataFlow);
+    startDataFlow();
+}
+
+// ============ MONITOREO CONTINUO ============
+setInterval(() => {
+    if (EVOXIA.data.mejoraContinua.length > 5) {
+        const recent = EVOXIA.data.mejoraContinua.slice(-5);
+        const avg = recent.reduce((a, b) => a + b, 0) / recent.length;
+        
+        const allPhases = [
+            ...EVOXIA.data.planificacion.slice(-5),
+            ...EVOXIA.data.diseno.slice(-5),
+            ...EVOXIA.data.transicion.slice(-5),
+            ...EVOXIA.data.operacion.slice(-5),
+            ...EVOXIA.data.mejoraContinua.slice(-5)
+        ];
+        const avgAll = allPhases.reduce((a, b) => a + b, 0) / allPhases.length;
+        
+        if (avg > 90 && avgAll > 85) {
+            celebrateImprovement();
+        }
+    }
+}, 30000);
+
+// ============ PERSISTENCIA ============
+window.addEventListener('beforeunload', () => {
+    try {
+        localStorage.setItem('evoxia_state', JSON.stringify(EVOXIA.state));
+    } catch (e) {
+        console.error('Error al guardar estado:', e);
+    }
 });
 
-// ==================== KEYBOARD SHORTCUTS ====================
-document.addEventListener('keydown', (e) => {
-  // Ctrl/Cmd + N = Nueva incidencia
-  if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-    e.preventDefault();
-    document.getElementById('modal-new-incident')?.classList.add('active');
-    addToLiveFeed('⌨️ Atajo de teclado: Nueva Incidencia', false);
-  }
-  
-  // Escape = Cerrar modal
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.modal.active').forEach(modal => {
-      modal.classList.remove('active');
-    });
-  }
-});
-
-// ==================== PERFORMANCE MONITORING ====================
-function monitorPerformance() {
-  const metrics = {
-    incidentResolutionRate: (STATE.incidents.filter(i => i.status === 'Resuelta').length / STATE.incidents.length * 100).toFixed(1),
-    averageMTTR: (STATE.incidents.reduce((sum, i) => sum + parseFloat(i.mttr), 0) / STATE.incidents.length).toFixed(1),
-    slaCompliance: (STATE.incidents.filter(i => i.sla).length / STATE.incidents.length * 100).toFixed(1),
-    activeProblems: STATE.problems.filter(p => p.status === 'Activo').length,
-    activeRisks: STATE.risks.filter(r => r.status === 'Activo').length,
-    projectCPI: STATE.projectData.cpi,
-    projectSPI: STATE.projectData.spi
-  };
-  
-  return metrics;
-}
-
-// ==================== CONSOLE LOGGING ====================
-console.log('%c🚀 NEXUS Pro - Sistema Integrado ITIL + PMBOK', 'color: #0066cc; font-size: 20px; font-weight: bold;');
-console.log('%c📊 Sistema inicializado correctamente', 'color: #28a745; font-size: 14px;');
-console.log('%cITIL v4 Service Management ✓', 'color: #0066cc;');
-console.log('%cPMBOK 7 Project Management ✓', 'color: #28a745;');
-console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #64748b;');
-
-// ==================== FINAL INITIALIZATION ====================
-// Renderizar matrices adicionales
-setTimeout(() => {
-  renderRiskMatrix();
-  renderStakeholderMatrix();
-}, 1000);
-
-// Mensaje de bienvenida en feed
-setTimeout(() => {
-  addToLiveFeed('👋 Bienvenido al Sistema NEXUS Pro', false);
-  addToLiveFeed('🔄 Integración ITIL v4 + PMBOK 7 activa', false);
-  addToLiveFeed('📡 Monitoreo en tiempo real habilitado', false);
-  addToLiveFeed('🤖 Motor de IA para detección de patrones activado', false);
-}, 500);
-
-// ==================== ADVANCED ANALYTICS ====================
-function generateAdvancedAnalytics() {
-  const analytics = {
-    itil: {
-      incidentTrend: calculateTrend(STATE.incidents),
-      problemRecurrence: calculateProblemRecurrence(),
-      changeSuccessRate: calculateChangeSuccessRate(),
-      slaPerformance: calculateSLAPerformance()
-    },
-    pmbok: {
-      scheduleVariance: STATE.projectData.ev - STATE.projectData.pv,
-      costVariance: STATE.projectData.ev - STATE.projectData.ac,
-      estimateAtCompletion: calculateEAC(),
-      varianceAtCompletion: calculateVAC(),
-      toCompletePerformanceIndex: calculateTCPI()
-    },
-    integration: {
-      itilImpactOnSchedule: assessITILImpactOnSchedule(),
-      riskCorrelation: assessRiskCorrelation(),
-      qualityMetrics: assessQualityMetrics()
+// Cargar estado previo
+const savedState = localStorage.getItem('evoxia_state');
+if (savedState) {
+    try {
+        const parsed = JSON.parse(savedState);
+        EVOXIA.state = { ...EVOXIA.state, ...parsed };
+    } catch (e) {
+        console.error('Error al cargar estado:', e);
     }
-  };
-  
-  return analytics;
 }
 
-function calculateTrend(data) {
-  // Calcular tendencia de incidencias en los últimos 7 días
-  const last7Days = data.filter(i => {
-    const days = Math.floor((new Date().getTime() - i.timestamp) / (1000 * 60 * 60 * 24));
-    return days <= 7;
-  });
-  
-  return {
-    total: last7Days.length,
-    critical: last7Days.filter(i => i.priority === 'Crítica').length,
-    trend: last7Days.length > data.length * 0.2 ? 'Ascendente' : 'Estable'
-  };
-}
-
-function calculateProblemRecurrence() {
-  return {
-    total: STATE.problems.length,
-    active: STATE.problems.filter(p => p.status === 'Activo').length,
-    resolved: STATE.problems.filter(p => p.status === 'Resuelto').length
-  };
-}
-
-function calculateChangeSuccessRate() {
-  const successful = STATE.changes.filter(c => c.status === 'Aprobado').length;
-  return (successful / STATE.changes.length * 100).toFixed(1);
-}
-
-function calculateSLAPerformance() {
-  const compliant = STATE.incidents.filter(i => i.sla).length;
-  return (compliant / STATE.incidents.length * 100).toFixed(1);
-}
-
-function calculateEAC() {
-  // Estimate at Completion = BAC / CPI
-  return (STATE.projectData.budget / STATE.projectData.cpi).toFixed(0);
-}
-
-function calculateVAC() {
-  // Variance at Completion = BAC - EAC
-  const eac = calculateEAC();
-  return (STATE.projectData.budget - eac).toFixed(0);
-}
-
-function calculateTCPI() {
-  // To Complete Performance Index
-  const workRemaining = STATE.projectData.budget - STATE.projectData.ev;
-  const fundsRemaining = STATE.projectData.budget - STATE.projectData.ac;
-  return (workRemaining / fundsRemaining).toFixed(2);
-}
-
-function assessITILImpactOnSchedule() {
-  const criticalIncidents = STATE.incidents.filter(i => i.priority === 'Crítica').length;
-  if (criticalIncidents > 5) return 'Alto - Múltiples incidencias críticas afectan el cronograma';
-  if (criticalIncidents > 2) return 'Medio - Algunas incidencias impactan actividades';
-  return 'Bajo - Incidencias bajo control';
-}
-
-function assessRiskCorrelation() {
-  const highRisks = STATE.risks.filter(r => r.exposure === 'Crítica' || r.exposure === 'Alta').length;
-  const criticalIncidents = STATE.incidents.filter(i => i.priority === 'Crítica').length;
-  
-  if (highRisks > 3 && criticalIncidents > 5) {
-    return 'Alta correlación - Riesgos materializándose en incidencias';
-  }
-  return 'Correlación moderada - Gestión de riesgos efectiva';
-}
-
-function assessQualityMetrics() {
-  return {
-    defectDensity: (23 / 1000).toFixed(3), // defectos por línea de código
-    testCoverage: 94.2,
-    codeReviewCompletion: 100,
-    automatedTestPass: 96.8
-  };
-}
-
-// ==================== DASHBOARD REFRESH ====================
-function refreshDashboard() {
-  updateDashboard();
-  renderIncidentsTable();
-  renderProblemsGrid();
-  renderChangesTable();
-  renderRisksTable();
-  renderStakeholdersTable();
-  updateCharts();
-  
-  addToLiveFeed('🔄 Dashboard actualizado', false);
-}
-
-// Exponer funciones globales necesarias
-window.showIncidentDetail = showIncidentDetail;
-window.createNewIncident = createNewIncident;
-window.resolveCurrentIncident = resolveCurrentIncident;
-window.escalateToProblem = escalateToProblem;
-window.exportToPDF = exportToPDF;
-window.exportToExcel = exportToExcel;
-window.refreshDashboard = refreshDashboard;
-window.generateAdvancedAnalytics = generateAdvancedAnalytics;
-
-// ==================== END OF SCRIPT ====================
-console.log('%c✅ Todos los módulos cargados correctamente', 'color: #10b981; font-weight: bold;');
-console.log('%c💡 Tip: Usa Ctrl+N para crear una nueva incidencia rápidamente', 'color: #3b82f6;');
-console.log('%c📊 Usa generateAdvancedAnalytics() en consola para ver analíticas avanzadas', 'color: #f59e0b;'); priority-${inc.impact.toLowerCase()}">${inc.impact}</span></td>
-      <td><span class="priority-badge priority-${inc.urgency.toLowerCase()}">${inc.urgency}</span></td>
-      <td><span class="priority-badge priority-${inc.priority.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}">${inc.priority}</span></td>
-      <td><span class="status-badge status-${inc.status.toLowerCase().replace(/ /g, '-')}">${inc.status}</span></td>
-      <td>${inc.assignedGroup}</td>
-      <td><span style="color: ${inc.sla ? '#10b981' : '#ef4444'}; font-weight: 600;">${inc.sla ? '✓ OK' : '✗ Incumplido'}</span></td>
-      <td><button class="action-btn">Ver</button></td>
-    </tr>
-  `).join('');
-}
-
-function renderProblemsGrid() {
-  const container = document.getElementById('problems-list');
-  
-  if (STATE.problems.length === 0) {
-    container.innerHTML = `
-      <div style="text-align: center; padding: 60px; color: #64748b;">
-        <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 20px; color: #10b981;"></i>
-        <h3 style="color: #cbd5e1;">No hay problemas recurrentes detectados</h3>
-        <p>El sistema IA está monitoreando continuamente patrones de incidencias</p>
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = STATE.problems.map(prob => `
-    <div class="problem-card">
-      <div class="problem-header">
-        <h3 class="problem-title">${prob.id} - ${prob.title}</h3>
-        <span class="status-badge status-${prob.status.toLowerCase()}">${prob.status}</span>
-      </div>
-      <div class="problem-info">
-        <div class="problem-info-item">
-          <span class="problem-label">Categoría ITIL</span>
-          <span class="problem-value">${prob.category}</span>
-        </div>
-        <div class="problem-info-item">
-          <span class="problem-label">Incidencias Relacionadas</span>
-          <span class="problem-value">${prob.incidentCount}</span>
-        </div>
-        <div class="problem-info-item">
-          <span class="problem-label">Prioridad</span>
-          <span class="problem-value">${prob.priority}</span>
-        </div>
-        <div class="problem-info-item">
-          <span class="problem-label">Known Error</span>
-          <span class="problem-value">${prob.knownError ? 'Sí' : 'No'}</span>
-        </div>
-      </div>
-      <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(100, 116, 139, 0.2);">
-        <p style="color: #cbd5e1; margin-bottom: 8px;"><strong>Causa Raíz:</strong> ${prob.rootCause}</p>
-        <p style="color: #cbd5e1; margin-bottom: 8px;"><strong>Workaround:</strong> ${prob.workaround}</p>
-        <p style="color: #f59e0b;"><strong>Impacto en Proyecto (PMBOK):</strong> ${prob.pmImpact}</p>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderChangesTable() {
-  const tbody = document.getElementById('changes-tbody');
-  
-  tbody.innerHTML = STATE.changes.map(chg => `
-    <tr>
-      <td><strong>${chg.id}</strong></td>
-      <td>${chg.title}</td>
-      <td><span class="priority-badge priority-${chg.type.toLowerCase()}">${chg.type}</span></td>
-      <td>${chg.category}</td>
-      <td><span class="priority-badge priority-${chg.risk.toLowerCase()}">${chg.risk}</span></td>
-      <td><span class="status-badge">${chg.cabStatus}</span></td>
-      <td>${chg.implementationDate}</td>
-      <td style="color: ${chg.pmImpact.startsWith('Crítico') ? '#ef4444' : chg.pmImpact.startsWith('Alto') ? '#f59e0b' : '#3b82f6'};">${chg.pmImpact}</td>
-      <td><button class="action-btn">Gestionar</button></td>
-    </tr>
-  `).join('');
-}
-
-function renderRisksTable() {
-  const tbody = document.getElementById('risks-tbody');
-  
-  tbody.innerHTML = STATE.risks.map(risk => `
-    <tr>
-      <td><strong>${risk.id}</strong></td>
-      <td>${risk.description}</td>
-      <td>${risk.category}</td>
-      <td><span class="priority-badge">${risk.probability}</span></td>
-      <td><span class="priority-badge">${risk.impact}</span></td>
-      <td><span class="priority-badge priority-${risk.exposure.toLowerCase()}">${risk.exposure}</span></td>
-      <td>${risk.strategy}</td>
-      <td>${risk.responsible}</td>
-      <td><span class="status-badge status-${risk.status.toLowerCase()}">${risk.status}</span></td>
-    </tr>
-  `).join('');
-}
-
-function renderStakeholdersTable() {
-  const tbody = document.getElementById('stakeholders-tbody');
-  
-  tbody.innerHTML = STATE.stakeholders.map(sh => `
-    <tr>
-      <td><strong>${sh.name}</strong></td>
-      <td>${sh.role}</td>
-      <td><span class="priority-badge priority-${sh.power.toLowerCase()}">${sh.power}</span></td>
-      <td><span class="priority-badge priority-${sh.interest.toLowerCase()}">${sh.interest}</span></td>
-      <td>${sh.strategy}</td>
-      <td>${sh.frequency}</td>
-      <td>${sh.channel}</td>
-    </tr>
-  `).join('');
-}
-
-function renderWBS() {
-  const wbsContainer = document.getElementById('wbs-container');
-  
-  const wbsData = [
-    { level: 0, name: "1.0 Proyecto Sistema Hospitalario IA", progress: 67 },
-    { level: 1, name: "1.1 Iniciación", progress: 100 },
-    { level: 1, name: "1.2 Planificación", progress: 100 },
-    { level: 1, name: "1.3 Ejecución", progress: 65 },
-    { level: 2, name: "1.3.1 Desarrollo Backend", progress: 80 },
-    { level: 2, name: "1.3.2 Desarrollo Frontend", progress: 70 },
-    { level: 2, name: "1.3.3 Integración IA", progress: 45 },
-    { level: 1, name: "1.4 Monitoreo y Control", progress: 60 },
-    { level: 1, name: "1.5 Cierre", progress: 0 }
-  ];
-
-  wbsContainer.innerHTML = wbsData.map(item => `
-    <div class="wbs-item" style="margin-left: ${item.level * 30}px;">
-      <span class="wbs-name">${item.name}</span>
-      <div class="wbs-progress">
-        <div class="wbs-progress-bar">
-          <div class="wbs-progress-fill" style="width: ${item.progress}%"></div>
-        </div>
-        <span class="wbs-percent">${item.progress}%</span>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderGanttChart() {
-  const ganttContainer = document.getElementById('gantt-chart');
-  
-  const tasks = [
-    { name: "Análisis de Requisitos", start: 0, duration: 15, critical: false },
-    { name: "Diseño de Arquitectura", start: 15, duration: 20, critical: true },
-    { name: "Desarrollo Backend", start: 35, duration: 60, critical: true },
-    { name: "Desarrollo Frontend", start: 35, duration: 50, critical: false },
-    { name: "Integración IA", start: 95, duration: 40, critical: true },
-    { name: "Testing y QA", start: 135, duration: 30, critical: true },
-    { name: "Capacitación", start: 150, duration: 20, critical: false },
-    { name: "Despliegue", start: 165, duration: 10, critical: true }
-  ];
-
-  ganttContainer.innerHTML = tasks.map(task => `
-    <div class="gantt-row">
-      <div class="gantt-task-name">${task.name}</div>
-      <div class="gantt-timeline">
-        <div class="gantt-bar ${task.critical ? 'critical' : ''}" 
-             style="left: ${(task.start / 180) * 100}%; width: ${(task.duration / 180) * 100}%;">
-          ${task.duration}d
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderIntegrationMatrix() {
-  const container = document.getElementById('integration-matrix');
-  
-  const itilProcesses = [
-    "Incident Management",
-    "Problem Management",
-    "Change Management",
-    "Release Management"
-  ];
-
-  const pmbokAreas = [
-    "Alcance", "Cronograma", "Costos", "Calidad", "Riesgos"
-  ];
-
-  // Matriz de integración (strong, medium, weak, none)
-  const matrix = [
-    ["medium", "strong", "weak", "medium", "strong"],    // Incident
-    ["strong", "strong", "medium", "strong", "strong"],  // Problem
-    ["strong", "strong", "strong", "medium", "strong"],  // Change
-    ["strong", "strong", "medium", "strong", "medium"]   // Release
-  ];
-
-  let html = '<table class="integration-table"><thead><tr><th>ITIL \\ PMBOK</th>';
-  pmbokAreas.forEach(area => {
-    html += `<th>${area}</th>`;
-  });
-  html += '</tr></thead><tbody>';
-
-  itilProcesses.forEach((process, i) => {
-    html += `<tr><th>${process}</th>`;
-    matrix[i].forEach(level => {
-      html += `<td><div class="integration-cell ${level}" title="${level}"></div></td>`;
-    });
-    html += '</tr>';
-  });
-
-  html += '</tbody></table>';
-  container.innerHTML = html;
-}
-
-function renderKPIDashboard() {
-  const container = document.getElementById('kpi-dashboard');
-  
-  const kpis = [
-    {
-      name: "Incident Resolution Rate",
-      category: "ITIL",
-      value: "94.2%",
-      trend: "+2.1%",
-      positive: true,
-      target: "95%"
-    },
-    {
-      name: "MTTR (Mean Time To Repair)",
-      category: "ITIL",
-      value: "2.4h",
-      trend: "-15%",
-      positive: true,
-      target: "< 3h"
-    },
-    {
-      name: "CPI (Cost Performance Index)",
-      category: "PMBOK",
-      value: "1.08",
-      trend: "+0.03",
-      positive: true,
-      target: "> 1.0"
-    },
-    {
-      name: "SPI (Schedule Performance Index)",
-      category: "PMBOK",
-      value: "0.96",
-      trend: "-0.02",
-      positive: false,
-      target: "> 1.0"
-    },
-    {
-      name: "Change Success Rate",
-      category: "ITIL",
-      value: "98.5%",
-      trend: "+1.2%",
-      positive: true,
-      target: "> 95%"
-    },
-    {
-      name: "Risk Mitigation Rate",
-      category: "PMBOK",
-      value: "87%",
-      trend: "+5%",
-      positive: true,
-      target: "> 80%"
-    }
-  ];
-
-  container.innerHTML = kpis.map(kpi => `
-    <div class="kpi-card ${kpi.category.toLowerCase()}">
-      <div class="kpi-header">
-        <span class="kpi-name">${kpi.name}</span>
-        <span class="kpi-category ${kpi.category.toLowerCase()}-badge">${kpi.category}</span>
-      </div>
-      <div class="kpi-body">
-        <div class="kpi-value-large">${kpi.value}</div>
-        <div class="kpi-trend ${kpi.positive ? 'positive' : 'negative'}">
-          <i class="fas fa-arrow-${kpi.positive ? 'up' : 'down'}"></i>
-          <span>${kpi.trend} vs mes anterior</span>
-        </div>
-      </div>
-      <div class="kpi-footer">
-        <span>Target: ${kpi.target}</span>
-        <span>${kpi.positive ? '✓ On Track' : '⚠ At Risk'}</span>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderReleasesTimeline() {
-  const container = document.getElementById('releases-timeline');
-  
-  const releases = [
-    {
-      version: "v1.0 - MVP",
-      date: "15 Marzo 2025",
-      status: "Completado",
-      description: " + value + 'K' }, 
-          grid: { color: 'rgba(100, 116, 139, 0.1)' }
-        },
-        x: { 
-          ticks: { color: '#64748b' }, 
-          grid: { display: false } 
-        }
-      }
-    }
-  });
-}
-
-function createCostDistributionChart() {
-  const ctx = document.getElementById('chart-cost-distribution').getContext('2d');
-  
-  STATE.charts.costDistribution = new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: ['Personal', 'Hardware', 'Software', 'Servicios', 'Capacitación', 'Otros'],
-      datasets: [{
-        data: [450, 280, 195, 150, 85, 40],
-        backgroundColor: [
-          '#0066cc',
-          '#28a745',
-          '#f59e0b',
-          '#3b82f6',
-          '#8b5cf6',
-          '#64748b'
-        ],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'right',
-          labels: { color: '#cbd5e1', font: { size: 12 } }
-        }
-      }
-    }
-  });
-}
-
-function createQualityChart() {
-  const ctx = document.getElementById('chart-quality').getContext('2d');
-  
-  STATE.charts.quality = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5', 'Semana 6'],
-      datasets: [
-        {
-          label: 'Tests Aprobados %',
-          data: [88, 90, 92, 93, 94, 94.2],
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
-          tension: 0.4,
-          fill: true,
-          borderWidth: 3
-        },
-        {
-          label: 'Defectos Abiertos',
-          data: [45, 38, 32, 28, 25, 23],
-          borderColor: '#ef4444',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-          tension: 0.4,
-          fill: true,
-          borderWidth: 3
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color: '#cbd5e1' } }
-      },
-      scales: {
-        y: { 
-          ticks: { color: '#64748b' }, 
-          grid: { color: 'rgba(100, 116, 139, 0.1)' }
-        },
-        x: { 
-          ticks: { color: '#64748b' }, 
-          grid: { display: false } 
-        }
-      }
-    }
-  });
-}
-
-// ==================== NAVIGATION ====================
-function setupNavigation() {
-  const navItems = document.querySelectorAll('.nav-item');
-  const sections = document.querySelectorAll('.view-section');
-  const pageTitle = document.getElementById('page-title');
-
-  navItems.forEach(item => {
-    item.addEventListener('click', (e) => {
-      e.preventDefault();
-      
-      navItems.forEach(nav => nav.classList.remove('active'));
-      item.classList.add('active');
-
-      const viewId = item.getAttribute('data-view');
-      sections.forEach(section => section.classList.remove('active'));
-      document.getElementById(viewId).classList.add('active');
-
-      const titles = {
-        'dashboard': 'Dashboard Ejecutivo',
-        'incidents': 'ITIL Incident Management',
-        'problems': 'ITIL Problem Management',
-        'changes': 'ITIL Change Management',
-        'releases': 'ITIL Release Management',
-        'scope': 'Gestión del Alcance - PMBOK',
-        'schedule': 'Gestión del Cronograma - PMBOK',
-        'costs': 'Gestión de Costos - PMBOK',
-        'quality': 'Gestión de Calidad - PMBOK',
-        'risks': 'Gestión de Riesgos - PMBOK',
-        'stakeholders': 'Gestión de Interesados - PMBOK',
-        'integration': 'Matriz de Integración ITIL + PMBOK',
-        'kpis': 'KPIs y Métricas Integradas',
-        'reports': 'Reportes Ejecutivos'
-      };
-      
-      pageTitle.textContent = titles[viewId] || 'NEXUS Pro';
-      
-      addToLiveFeed(`📊 Navegando a: ${titles[viewId]}`, false);
-    });
-  });
-}
-
-// ==================== EVENT LISTENERS ====================
-function setupEventListeners() {
-  // Modal handlers
-  document.querySelectorAll('.modal-close').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const modalId = btn.getAttribute('data-modal');
-      document.getElementById(modalId).classList.remove('active');
-    });
-  });
-
-  document.querySelectorAll('[data-close]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const modalId = btn.getAttribute('data-close');
-      document.getElementById(modalId).classList.remove('active');
-    });
-  });
-
-  // Close modal on outside click
-  document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.classList.remove('active');
-      }
-    });
-  });
-
-  // New incident button
-  const btnNewIncident = document.getElementById('btn-new-incident');
-  if (btnNewIncident) {
-    btnNewIncident.addEventListener('click', () => {
-      document.getElementById('modal-new-incident').classList.add('active');
-    });
-  }
-
-  // Submit new incident
-  const btnSubmitIncident = document.getElementById('btn-submit-incident');
-  if (btnSubmitIncident) {
-    btnSubmitIncident.addEventListener('click', () => {
-      createNewIncident();
-    });
-  }
-
-  // Resolve incident button
-  const btnResolveIncident = document.getElementById('btn-resolve-incident');
-  if (btnResolveIncident) {
-    btnResolveIncident.addEventListener('click', () => {
-      resolveCurrentIncident();
-    });
-  }
-
-  // Escalate to problem button
-  const btnEscalateProblem = document.getElementById('btn-escalate-problem');
-  if (btnEscalateProblem) {
-    btnEscalateProblem.addEventListener('click', () => {
-      escalateToProblem();
-    });
-  }
-
-  // Filter buttons
-  document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-btn[data-filter]').forEach(b => 
-        b.classList.remove('active')
-      );
-      btn.classList.add('active');
-      
-      const filter = btn.getAttribute('data-filter');
-      filterIncidents(filter);
-    });
-  });
-
-  // Search functionality
-  const searchInput = document.getElementById('global-search');
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      const query = e.target.value.toLowerCase();
-      if (query.length > 2) {
-        addToLiveFeed(`🔍 Búsqueda: "${query}"`, false);
-      }
-    });
-  }
-
-  // Notification button
-  const notifBtn = document.getElementById('notification-btn');
-  if (notifBtn) {
-    notifBtn.addEventListener('click', () => {
-      STATE.notificationCount = 0;
-      const dot = document.getElementById('notification-dot');
-      if (dot) dot.style.display = 'none';
-      addToLiveFeed('✅ Notificaciones marcadas como leídas', false);
-    });
-  }
-}
-
-// ==================== INCIDENT MANAGEMENT ====================
-let currentIncidentId = null;
-
-function showIncidentDetail(incidentId) {
-  const incident = STATE.incidents.find(i => i.id === incidentId);
-  if (!incident) return;
-
-  currentIncidentId = incidentId;
-  const modal = document.getElementById('modal-incident');
-  const modalBody = document.getElementById('modal-incident-body');
-  
-  modalBody.innerHTML = `
-    <div style="background: rgba(15, 23, 42, 0.5); padding: 25px; border-radius: 16px; margin-bottom: 20px;">
-      <h3 style="color: #fff; font-size: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
-        <i class="fas fa-ticket-alt" style="color: #0066cc;"></i>
-        ${incident.id} - ${incident.title}
-      </h3>
-      
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;">
-        <div>
-          <p style="color: #64748b; font-size: 12px; margin-bottom: 5px; font-weight: 600;">CATEGORÍA ITIL</p>
-          <p style="color: #cbd5e1; font-weight: 600; font-size: 15px;">${incident.category}</p>
-        </div>
-        <div>
-          <p style="color: #64748b; font-size: 12px; margin-bottom: 5px; font-weight: 600;">FECHA Y HORA</p>
-          <p style="color: #cbd5e1; font-weight: 600; font-size: 15px;">${incident.date} ${incident.time}</p>
-        </div>
-        <div>
-          <p style="color: #64748b; font-size: 12px; margin-bottom: 5px; font-weight: 600;">IMPACTO</p>
-          <span class="priority-badge priority-${incident.impact.toLowerCase()}">${incident.impact}</span>
-        </div>
-        <div>
-          <p style="color: #64748b; font-size: 12px; margin-bottom: 5px; font-weight: 600;">URGENCIA</p>
-          <span class="priority-badge priority-${incident.urgency.toLowerCase()}">${incident.urgency}</span>
-        </div>
-        <div>
-          <p style="color: #64748b; font-size: 12px; margin-bottom: 5px; font-weight: 600;">PRIORIDAD CALCULADA</p>
-          <span class="priority-badge priority-${incident.priority.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}">${incident.priority}</span>
-        </div>
-        <div>
-          <p style="color: #64748b; font-size: 12px; margin-bottom: 5px; font-weight: 600;">ESTADO ACTUAL</p>
-          <span class="status-badge status-${incident.status.toLowerCase().replace(/ /g, '-')}">${incident.status}</span>
-        </div>
-        <div>
-          <p style="color: #64748b; font-size: 12px; margin-bottom: 5px; font-weight: 600;">GRUPO ASIGNADO</p>
-          <p style="color: #cbd5e1; font-weight: 600; font-size: 15px;">${incident.assignedGroup}</p>
-        </div>
-        <div>
-          <p style="color: #64748b; font-size: 12px; margin-bottom: 5px; font-weight: 600;">TÉCNICO</p>
-          <p style="color: #cbd5e1; font-weight: 600; font-size: 15px;">${incident.assignedTo}</p>
-        </div>
-      </div>
-
-      <div style="padding: 20px; background: rgba(30, 41, 59, 0.5); border-radius: 12px; margin-bottom: 20px;">
-        <h4 style="color: #cbd5e1; margin-bottom: 10px; font-size: 14px; font-weight: 700;">
-          <i class="fas fa-clock"></i> MÉTRICAS SLA
-        </h4>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-          <div>
-            <p style="color: #64748b; font-size: 11px; margin-bottom: 5px;">SLA TARGET</p>
-            <p style="color: #cbd5e1; font-weight: 700;">${incident.slaTarget}h</p>
-          </div>
-          <div>
-            <p style="color: #64748b; font-size: 11px; margin-bottom: 5px;">MTTR ACTUAL</p>
-            <p style="color: #cbd5e1; font-weight: 700;">${incident.mttr}h</p>
-          </div>
-          <div>
-            <p style="color: #64748b; font-size: 11px; margin-bottom: 5px;">CUMPLIMIENTO</p>
-            <p style="color: ${incident.sla ? '#10b981' : '#ef4444'}; font-weight: 700;">
-              ${incident.sla ? '✓ Cumplido' : '✗ Incumplido'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div style="padding: 20px; background: rgba(30, 41, 59, 0.5); border-radius: 12px;">
-        <h4 style="color: #cbd5e1; margin-bottom: 10px; font-size: 14px; font-weight: 700;">
-          <i class="fas fa-info-circle"></i> DESCRIPCIÓN
-        </h4>
-        <p style="color: #94a3b8; line-height: 1.6;">${incident.description}</p>
-      </div>
-
-      ${incident.relatedProblem ? `
-        <div style="padding: 20px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; margin-top: 15px;">
-          <h4 style="color: #ef4444; margin-bottom: 10px; font-size: 14px; font-weight: 700;">
-            <i class="fas fa-link"></i> PROBLEMA RELACIONADO
-          </h4>
-          <p style="color: #cbd5e1;">${incident.relatedProblem}</p>
-        </div>
-      ` : ''}
-    </div>
-
-    <div style="padding: 20px; background: rgba(40, 167, 69, 0.1); border: 1px solid rgba(40, 167, 69, 0.3); border-radius: 16px;">
-      <h4 style="color: #28a745; margin-bottom: 12px; font-size: 14px; font-weight: 700;">
-        <i class="fas fa-project-diagram"></i> IMPACTO EN PROYECTO (PMBOK)
-      </h4>
-      <p style="color: #cbd5e1; margin-bottom: 10px;">
-        <strong>Área de Conocimiento Afectada:</strong> ${incident.priority === 'Crítica' ? 'Cronograma, Calidad, Riesgos' : 'Calidad'}
-      </p>
-      <p style="color: #cbd5e1; margin-bottom: 10px;">
-        <strong>Impacto en CPI:</strong> ${incident.priority === 'Crítica' ? 'Alto - Requiere recursos adicionales' : 'Bajo'}
-      </p>
-      <p style="color: #cbd5e1;">
-        <strong>Impacto en SPI:</strong> ${incident.priority === 'Crítica' ? 'Alto - Posible retraso en entregables' : 'Bajo - No afecta ruta crítica'}
-      </p>
-    </div>
-  `;
-  
-  modal.classList.add('active');
-}
-
-function createNewIncident() {
-  const title = document.getElementById('incident-title').value;
-  const category = document.getElementById('incident-category').value;
-  const impact = document.getElementById('incident-impact').value;
-  const urgency = document.getElementById('incident-urgency').value;
-  const group = document.getElementById('incident-group').value;
-  const description = document.getElementById('incident-description').value;
-
-  if (!title) {
-    alert('Por favor ingrese un título para la incidencia');
-    return;
-  }
-
-  const priority = calculatePriority(impact, urgency);
-
-  const incident = {
-    id: `INC-${String(STATE.incidents.length + 10001).padStart(6, '0')}`,
-    title,
-    category,
-    impact,
-    urgency,
-    priority,
-    status: "Abierta",
-    assignedGroup: group,
-    assignedTo: `Técnico ${Math.floor(Math.random() * 20) + 1}`,
-    date: new Date().toLocaleDateString('es-ES'),
-    time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-    timestamp: new Date().getTime(),
-    sla: true,
-    slaTarget: priority === "Crítica" ? 2 : priority === "Alta" ? 4 : 8,
-    mttr: 0,
-    description: description || `Incidencia registrada manualmente en ${category}`,
-    rootCause: null,
-    resolution: null,
-    relatedProblem: null
-  };
-
-  STATE.incidents.unshift(incident);
-  
-  addToLiveFeed(`✅ Nueva incidencia creada: ${incident.id}`, false);
-  showNotification("Incidencia creada exitosamente");
-  
-  document.getElementById('modal-new-incident').classList.remove('active');
-  document.getElementById('form-new-incident').reset();
-  
-  renderIncidentsTable();
-  updateDashboard();
-  updateCharts();
-}
-
-function resolveCurrentIncident() {
-  if (!currentIncidentId) return;
-  
-  const incident = STATE.incidents.find(i => i.id === currentIncidentId);
-  if (incident) {
-    incident.status = "Resuelta";
-    incident.resolution = "Incidencia resuelta exitosamente";
-    
-    addToLiveFeed(`✅ Incidencia resuelta: ${incident.id}`, false);
-    showNotification("Incidencia resuelta");
-    
-    document.getElementById('modal-incident').classList.remove('active');
-    renderIncidentsTable();
-    updateDashboard();
-    updateCharts();
-  }
-}
-
-function escalateToProblem() {
-  if (!currentIncidentId) return;
-  
-  const incident = STATE.incidents.find(i => i.id === currentIncidentId);
-  if (incident) {
-    const problem = {
-      id: `PRB-${String(STATE.problems.length + 3001).padStart(6, '0')}`,
-      title: `Problema escalado desde ${incident.id}`,
-      category: incident.category,
-      incidentCount: 1,
-      status: "Activo",
-      priority: incident.priority,
-      rootCause: "En investigación - Escalado desde incidencia",
-      workaround: "Por definir",
-      knownError: false,
-      createdDate: new Date().toLocaleDateString('es-ES'),
-      assignedTo: "Problem Manager",
-      relatedIncidents: [incident.id],
-      pmImpact: "Requiere análisis de impacto en proyecto"
-    };
-    
-    STATE.problems.push(problem);
-    incident.relatedProblem = problem.id;
-    
-    addToLiveFeed(`🔍 Problema creado desde incidencia: ${problem.id}`, true);
-    showNotification("Problema creado exitosamente");
-    
-    document.getElementById('modal-incident').classList.remove('active');
-    renderProblemsGrid();
-    updateDashboard();
-  }
-}
-
-function filterIncidents(filter) {
-  const tbody = document.getElementById('incidents-tbody');
-  let filtered = STATE.incidents;
-
-  switch(filter) {
-    case 'critical':
-      filtered = STATE.incidents.filter(i => i.priority === 'Crítica');
-      break;
-    case 'open':
-      filtered = STATE.incidents.filter(i => i.status === 'Abierta');
-      break;
-    case 'resolved':
-      filtered = STATE.incidents.filter(i => i.status === 'Resuelta');
-      break;
-  }
-
-  tbody.innerHTML = filtered.slice(0, 30).map(inc => `
-    <tr onclick="showIncidentDetail('${inc.id}')">
-      <td><strong>${inc.id}</strong></td>
-      <td>${inc.date}<br><small style="color: #64748b;">${inc.time}</small></td>
-      <td>${inc.title}</td>
-      <td>${inc.category}</td>
-      <td><span class="priority-badge priority-${inc.impact.toLowerCase()}">${inc.impact}</span></td>
-      <td><span class="priority-badge priority-${inc.urgency.toLowerCase()}">${inc.urgency}</span></td>
-      <td><span class="priority-badge// ==================== NEXUS PRO - ITIL + PMBOK INTEGRATION ====================
-// Sistema Integrado de Gestión ITIL v4 y PMBOK 7
-
-// ==================== GLOBAL STATE ====================
-const STATE = {
-  incidents: [],
-  problems: [],
-  changes: [],
-  releases: [],
-  risks: [],
-  stakeholders: [],
-  projectData: {
-    name: "Implementación Sistema Hospitalario IA",
-    startDate: "2025-01-01",
-    endDate: "2025-12-31",
-    budget: 1200000,
-    pv: 850000,
-    ev: 816000,
-    ac: 755000,
-    cpi: 1.08,
-    spi: 0.96
-  },
-  charts: {},
-  notificationCount: 0
-};
-
-// ITIL Categories
-const ITIL = {
-  categories: ["Hardware", "Software", "Network", "Database", "Application", "Security"],
-  impacts: ["Alto", "Medio", "Bajo"],
-  urgencies: ["Alta", "Media", "Baja"],
-  priorities: ["Crítica", "Alta", "Media", "Baja"],
-  statuses: ["Abierta", "En Progreso", "Resuelta", "Cerrada"],
-  supportGroups: ["Service Desk", "Infrastructure", "Application Support", "Database Team", "Security Team"],
-  changeTypes: ["Standard", "Normal", "Emergency"],
-  changeCategories: ["Infrastructure", "Application", "Data", "Security"]
-};
-
-// PMBOK Areas
-const PMBOK = {
-  knowledgeAreas: [
-    "Integración", "Alcance", "Cronograma", "Costos", 
-    "Calidad", "Recursos", "Comunicaciones", "Riesgos", 
-    "Adquisiciones", "Interesados"
-  ],
-  phases: ["Inicio", "Planificación", "Ejecución", "Monitoreo y Control", "Cierre"],
-  riskCategories: ["Técnico", "Organizacional", "Externo", "Gerencia de Proyecto"],
-  riskProbabilities: ["Muy Baja", "Baja", "Media", "Alta", "Muy Alta"],
-  riskImpacts: ["Muy Bajo", "Bajo", "Medio", "Alto", "Muy Alto"]
-};
-
-// ==================== INITIALIZATION ====================
-window.addEventListener('DOMContentLoaded', () => {
-  initializeSystem();
-  setupNavigation();
-  setupEventListeners();
-  createAllCharts();
-  startAutoUpdates();
-});
-
-function initializeSystem() {
-  console.log('🚀 NEXUS Pro - Inicializando Sistema ITIL + PMBOK...');
-  
-  // Generar datos iniciales
-  generateInitialIncidents();
-  generateInitialProblems();
-  generateInitialChanges();
-  generateInitialRisks();
-  generateInitialStakeholders();
-  
-  // Renderizar todo
-  updateDashboard();
-  renderIncidentsTable();
-  renderProblemsGrid();
-  renderChangesTable();
-  renderRisksTable();
-  renderStakeholdersTable();
-  renderWBS();
-  renderGanttChart();
-  renderIntegrationMatrix();
-  renderKPIDashboard();
-  renderReleasesTimeline();
-  
-  addToLiveFeed('✅ Sistema NEXUS Pro iniciado correctamente', false);
-  addToLiveFeed('🔄 ITIL Service Management activado', false);
-  addToLiveFeed('📊 PMBOK Project Management activado', false);
-}
-
-// ==================== DATA GENERATION ====================
-function generateInitialIncidents() {
-  for (let i = 0; i < 50; i++) {
-    generateAutoIncident(true);
-  }
-}
-
-function generateAutoIncident(silent = false) {
-  const category = ITIL.categories[Math.floor(Math.random() * ITIL.categories.length)];
-  const impact = ITIL.impacts[Math.floor(Math.random() * ITIL.impacts.length)];
-  const urgency = ITIL.urgencies[Math.floor(Math.random() * ITIL.urgencies.length)];
-  
-  // Calcular prioridad según matriz ITIL (Impacto x Urgencia)
-  const priority = calculatePriority(impact, urgency);
-  
-  const incident = {
-    id: `INC-${String(STATE.incidents.length + 10001).padStart(6, '0')}`,
-    title: priority === "Crítica" 
-      ? `FALLO CRÍTICO - ${category} sin respuesta` 
-      : `Degradación de rendimiento en ${category}`,
-    category,
-    impact,
-    urgency,
-    priority,
-    status: Math.random() < 0.7 ? "Abierta" : ITIL.statuses[Math.floor(Math.random() * ITIL.statuses.length)],
-    assignedGroup: ITIL.supportGroups[Math.floor(Math.random() * ITIL.supportGroups.length)],
-    assignedTo: `Técnico ${Math.floor(Math.random() * 20) + 1}`,
-    date: new Date().toLocaleDateString('es-ES'),
-    time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-    timestamp: new Date().getTime(),
-    sla: Math.random() < 0.92,
-    slaTarget: priority === "Crítica" ? 2 : priority === "Alta" ? 4 : 8,
-    mttr: priority === "Crítica" ? (Math.random() * 3 + 0.5).toFixed(1) : (Math.random() * 12 + 2).toFixed(1),
-    description: `Incidencia detectada en ${category}. Usuario reporta problemas de ${impact.toLowerCase()} impacto. Se requiere investigación y resolución inmediata según procedimientos ITIL.`,
-    rootCause: null,
-    resolution: null,
-    relatedProblem: null
-  };
-
-  STATE.incidents.unshift(incident);
-
-  if (!silent) {
-    if (priority === "Crítica") {
-      playAlert();
-      showNotification("¡Incidencia CRÍTICA detectada!");
-      addToLiveFeed(`🚨 CRÍTICA → ${incident.id} | ${incident.title}`, true);
-    } else {
-      addToLiveFeed(`📌 NUEVA → ${incident.id} | ${incident.title}`, false);
-    }
-    detectRecurrentProblems();
-  }
-
-  return incident;
-}
-
-function calculatePriority(impact, urgency) {
-  // Matriz ITIL de Prioridad (Impacto x Urgencia)
-  const matrix = {
-    'Alto': { 'Alta': 'Crítica', 'Media': 'Alta', 'Baja': 'Media' },
-    'Medio': { 'Alta': 'Alta', 'Media': 'Media', 'Baja': 'Baja' },
-    'Bajo': { 'Alta': 'Media', 'Media': 'Baja', 'Baja': 'Baja' }
-  };
-  return matrix[impact][urgency];
-}
-
-function detectRecurrentProblems() {
-  ITIL.categories.forEach(category => {
-    const openIncidents = STATE.incidents.filter(
-      i => i.category === category && i.status === "Abierta"
-    ).length;
-    
-    if (openIncidents >= 5 && !STATE.problems.some(p => p.category === category && p.status === "Activo")) {
-      const problem = {
-        id: `PRB-${String(STATE.problems.length + 3001).padStart(6, '0')}`,
-        title: `Problema Recurrente en ${category}`,
-        category,
-        incidentCount: openIncidents,
-        status: "Activo",
-        priority: "Alta",
-        rootCause: "Análisis en progreso - IA detectó patrón recurrente",
-        workaround: "Reinicio programado cada 6 horas como medida temporal",
-        knownError: true,
-        createdDate: new Date().toLocaleDateString('es-ES'),
-        assignedTo: "Problem Manager",
-        relatedIncidents: STATE.incidents
-          .filter(i => i.category === category && i.status === "Abierta")
-          .map(i => i.id),
-        pmImpact: "Alto - Afecta cronograma del proyecto y disponibilidad del servicio"
-      };
-      
-      STATE.problems.push(problem);
-      addToLiveFeed(`🔍 PROBLEMA → Detectado en ${category} (${openIncidents} incidencias)`, true);
-      showNotification("Nuevo problema identificado");
-    }
-  });
-  
-  renderProblemsGrid();
-}
-
-function generateInitialProblems() {
-  // Los problemas se generan dinámicamente por detectRecurrentProblems()
-}
-
-function generateInitialChanges() {
-  const changeTypes = ITIL.changeTypes;
-  const changeData = [
-    {
-      title: "Actualización sistema operativo servidores producción",
-      type: "Normal",
-      category: "Infrastructure",
-      risk: "Medio",
-      cabStatus: "Aprobado",
-      implementationDate: "2025-11-25 22:00",
-      pmImpact: "Medio - Requiere ventana de mantenimiento"
-    },
-    {
-      title: "Migración base de datos a nueva versión",
-      type: "Normal",
-      category: "Data",
-      risk: "Alto",
-      cabStatus: "En Revisión",
-      implementationDate: "2025-12-01 20:00",
-      pmImpact: "Alto - Riesgo en ruta crítica del proyecto"
-    },
-    {
-      title: "Parche de seguridad crítico",
-      type: "Emergency",
-      category: "Security",
-      risk: "Alto",
-      cabStatus: "Fast-Track",
-      implementationDate: "2025-11-19 18:00",
-      pmImpact: "Crítico - Requiere implementación inmediata"
-    },
-    {
-      title: "Actualización antivirus corporativo",
-      type: "Standard",
-      category: "Security",
-      risk: "Bajo",
-      cabStatus: "Pre-Aprobado",
-      implementationDate: "2025-11-20 02:00",
-      pmImpact: "Bajo - Cambio estándar"
-    }
-  ];
-
-  changeData.forEach((change, index) => {
-    STATE.changes.push({
-      id: `RFC-${String(2001 + index).padStart(6, '0')}`,
-      ...change,
-      status: change.cabStatus,
-      requestedBy: "Change Manager",
-      requestDate: new Date().toLocaleDateString('es-ES'),
-      approvers: ["CAB Chair", "Technical Lead", "Security Officer"]
-    });
-  });
-}
-
-function generateInitialRisks() {
-  const riskData = [
-    {
-      description: "Retraso en entrega de hardware por proveedor",
-      category: "Externo",
-      probability: "Alta",
-      impact: "Alto",
-      strategy: "Mitigar",
-      responsible: "PM - Compras"
-    },
-    {
-      description: "Falta de recursos especializados en IA",
-      category: "Organizacional",
-      probability: "Media",
-      impact: "Alto",
-      strategy: "Transferir",
-      responsible: "PM - RRHH"
-    },
-    {
-      description: "Incompatibilidad con sistemas legacy",
-      category: "Técnico",
-      probability: "Alta",
-      impact: "Medio",
-      strategy: "Mitigar",
-      responsible: "Arquitecto de Soluciones"
-    },
-    {
-      description: "Cambios en normativas de salud digital",
-      category: "Externo",
-      probability: "Baja",
-      impact: "Muy Alto",
-      strategy: "Aceptar",
-      responsible: "Legal"
-    },
-    {
-      description: "Sobrecarga del equipo de desarrollo",
-      category: "Gerencia de Proyecto",
-      probability: "Media",
-      impact: "Medio",
-      strategy: "Mitigar",
-      responsible: "Project Manager"
-    }
-  ];
-
-  riskData.forEach((risk, index) => {
-    const exposure = calculateRiskExposure(risk.probability, risk.impact);
-    STATE.risks.push({
-      id: `RSK-${String(4001 + index).padStart(6, '0')}`,
-      ...risk,
-      exposure,
-      status: "Activo",
-      createdDate: new Date().toLocaleDateString('es-ES'),
-      lastReview: new Date().toLocaleDateString('es-ES')
-    });
-  });
-}
-
-function calculateRiskExposure(probability, impact) {
-  const probValues = { "Muy Baja": 1, "Baja": 2, "Media": 3, "Alta": 4, "Muy Alta": 5 };
-  const impactValues = { "Muy Bajo": 1, "Bajo": 2, "Medio": 3, "Alto": 4, "Muy Alto": 5 };
-  const score = probValues[probability] * impactValues[impact];
-  
-  if (score >= 16) return "Crítica";
-  if (score >= 9) return "Alta";
-  if (score >= 4) return "Media";
-  return "Baja";
-}
-
-function generateInitialStakeholders() {
-  const stakeholderData = [
-    {
-      name: "Director General Hospital",
-      role: "Sponsor",
-      power: "Alto",
-      interest: "Alto",
-      strategy: "Gestionar Activamente",
-      frequency: "Semanal",
-      channel: "Reunión Ejecutiva"
-    },
-    {
-      name: "Jefe de Sistemas",
-      role: "Cliente",
-      power: "Alto",
-      interest: "Alto",
-      strategy: "Gestionar Activamente",
-      frequency: "Diaria",
-      channel: "Email / Teams"
-    },
-    {
-      name: "Usuario Final - Médicos",
-      role: "Usuario",
-      power: "Bajo",
-      interest: "Alto",
-      strategy: "Mantener Informado",
-      frequency: "Mensual",
-      channel: "Newsletter"
-    },
-    {
-      name: "Proveedor de Hardware",
-      role: "Proveedor",
-      power: "Medio",
-      interest: "Medio",
-      strategy: "Mantener Satisfecho",
-      frequency: "Quincenal",
-      channel: "Email"
-    },
-    {
-      name: "Regulador de Salud",
-      role: "Regulador",
-      power: "Alto",
-      interest: "Medio",
-      strategy: "Mantener Satisfecho",
-      frequency: "Trimestral",
-      channel: "Reporte Formal"
-    }
-  ];
-
-  STATE.stakeholders = stakeholderData;
-}
-
-// ==================== DASHBOARD UPDATE ====================
-function updateDashboard() {
-  // ITIL Metrics
-  const activeIncidents = STATE.incidents.filter(
-    i => i.status === "Abierta" || i.status === "En Progreso"
-  ).length;
-  const criticalIncidents = STATE.incidents.filter(
-    i => i.priority === "Crítica" && i.status !== "Resuelta"
-  ).length;
-  const avgMttr = (STATE.incidents.reduce((sum, i) => sum + parseFloat(i.mttr), 0) / STATE.incidents.length).toFixed(1);
-
-  document.getElementById('stat-incidents').textContent = activeIncidents;
-  document.getElementById('stat-critical').textContent = criticalIncidents;
-  document.getElementById('stat-mttr').textContent = avgMttr + 'h';
-  document.getElementById('incidents-badge').textContent = activeIncidents;
-  document.getElementById('problems-badge').textContent = STATE.problems.filter(p => p.status === "Activo").length;
-
-  // PMBOK Metrics
-  const cpi = STATE.projectData.cpi.toFixed(2);
-  const spi = STATE.projectData.spi.toFixed(2);
-  
-  document.getElementById('stat-cpi').textContent = cpi;
-  document.getElementById('stat-spi').textContent = spi;
-}
-
-// ==================== RENDER FUNCTIONS ====================
-function renderIncidentsTable() {
-  const tbody = document.getElementById('incidents-tbody');
-  const displayIncidents = STATE.incidents.slice(0, 30);
-  
-  tbody.innerHTML = displayIncidents.map(inc => `
-    <tr onclick="showIncidentDetail('${inc.id}')">
-      <td><strong>${inc.id}</strong></td>
-      <td>${inc.date}<br><small style="color: #64748b;">${inc.time}</small></td>
-      <td>${inc.title}</td>
-      <td>${inc.category}</td>
-      <td><span class="priority-badge priority-${inc.impact.toLowerCase()}">${inc.impact}</span></td>
-      <td><span class="priority-badge priority-${inc.urgency.toLowerCase()}">${inc.urgency}</span></td>
-      <td><span class="priority-badge priority-${inc.priority.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}">${inc.priority}</span></td>
-      <td><span class="status-badge status-${inc.status.toLowerCase().replace(/ /g, '-')}">${inc.status}</span></td>
-      <td>${inc.assignedGroup}</td>
-      <td><span style="color: ${inc.sla ? '#10b981' : '#ef4444'}; font-weight: 600;">${inc.sla ? '✓ OK' : '✗ Incumplido'}</span></td>
-      <td><button class="action-btn">Ver</button></td>
-    </tr>
-  `).join('');
-}
-
-function renderProblemsGrid() {
-  const container = document.getElementById('problems-list');
-  
-  if (STATE.problems.length === 0) {
-    container.innerHTML = `
-      <div style="text-align: center; padding: 60px; color: #64748b;">
-        <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 20px; color: #10b981;"></i>
-        <h3 style="color: #cbd5e1;">No hay problemas recurrentes detectados</h3>
-        <p>El sistema IA está monitoreando continuamente patrones de incidencias</p>
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = STATE.problems.map(prob => `
-    <div class="problem-card">
-      <div class="problem-header">
-        <h3 class="problem-title">${prob.id} - ${prob.title}</h3>
-        <span class="status-badge status-${prob.status.toLowerCase()}">${prob.status}</span>
-      </div>
-      <div class="problem-info">
-        <div class="problem-info-item">
-          <span class="problem-label">Categoría ITIL</span>
-          <span class="problem-value">${prob.category}</span>
-        </div>
-        <div class="problem-info-item">
-          <span class="problem-label">Incidencias Relacionadas</span>
-          <span class="problem-value">${prob.incidentCount}</span>
-        </div>
-        <div class="problem-info-item">
-          <span class="problem-label">Prioridad</span>
-          <span class="problem-value">${prob.priority}</span>
-        </div>
-        <div class="problem-info-item">
-          <span class="problem-label">Known Error</span>
-          <span class="problem-value">${prob.knownError ? 'Sí' : 'No'}</span>
-        </div>
-      </div>
-      <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(100, 116, 139, 0.2);">
-        <p style="color: #cbd5e1; margin-bottom: 8px;"><strong>Causa Raíz:</strong> ${prob.rootCause}</p>
-        <p style="color: #cbd5e1; margin-bottom: 8px;"><strong>Workaround:</strong> ${prob.workaround}</p>
-        <p style="color: #f59e0b;"><strong>Impacto en Proyecto (PMBOK):</strong> ${prob.pmImpact}</p>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderChangesTable() {
-  const tbody = document.getElementById('changes-tbody');
-  
-  tbody.innerHTML = STATE.changes.map(chg => `
-    <tr>
-      <td><strong>${chg.id}</strong></td>
-      <td>${chg.title}</td>
-      <td><span class="priority-badge priority-${chg.type.toLowerCase()}">${chg.type}</span></td>
-      <td>${chg.category}</td>
-      <td><span class="priority-badge priority-${chg.risk.toLowerCase()}">${chg.risk}</span></td>
-      <td><span class="status-badge">${chg.cabStatus}</span></td>
-      <td>${chg.implementationDate}</td>
-      <td style="color: ${chg.pmImpact.startsWith('Crítico') ? '#ef4444' : chg.pmImpact.startsWith('Alto') ? '#f59e0b' : '#3b82f6'};">${chg.pmImpact}</td>
-      <td><button class="action-btn">Gestionar</button></td>
-    </tr>
-  `).join('');
-}
-
-function renderRisksTable() {
-  const tbody = document.getElementById('risks-tbody');
-  
-  tbody.innerHTML = STATE.risks.map(risk => `
-    <tr>
-      <td><strong>${risk.id}</strong></td>
-      <td>${risk.description}</td>
-      <td>${risk.category}</td>
-      <td><span class="priority-badge">${risk.probability}</span></td>
-      <td><span class="priority-badge">${risk.impact}</span></td>
-      <td><span class="priority-badge priority-${risk.exposure.toLowerCase()}">${risk.exposure}</span></td>
-      <td>${risk.strategy}</td>
-      <td>${risk.responsible}</td>
-      <td><span class="status-badge status-${risk.status.toLowerCase()}">${risk.status}</span></td>
-    </tr>
-  `).join('');
-}
-
-function renderStakeholdersTable() {
-  const tbody = document.getElementById('stakeholders-tbody');
-  
-  tbody.innerHTML = STATE.stakeholders.map(sh => `
-    <tr>
-      <td><strong>${sh.name}</strong></td>
-      <td>${sh.role}</td>
-      <td><span class="priority-badge priority-${sh.power.toLowerCase()}">${sh.power}</span></td>
-      <td><span class="priority-badge priority-${sh.interest.toLowerCase()}">${sh.interest}</span></td>
-      <td>${sh.strategy}</td>
-      <td>${sh.frequency}</td>
-      <td>${sh.channel}</td>
-    </tr>
-  `).join('');
-}
-
-function renderWBS() {
-  const wbsContainer = document.getElementById('wbs-container');
-  
-  const wbsData = [
-    { level: 0, name: "1.0 Proyecto Sistema Hospitalario IA", progress: 67 },
-    { level: 1, name: "1.1 Iniciación", progress: 100 },
-    { level: 1, name: "1.2 Planificación", progress: 100 },
-    { level: 1, name: "1.3 Ejecución", progress: 65 },
-    { level: 2, name: "1.3.1 Desarrollo Backend", progress: 80 },
-    { level: 2, name: "1.3.2 Desarrollo Frontend", progress: 70 },
-    { level: 2, name: "1.3.3 Integración IA", progress: 45 },
-    { level: 1, name: "1.4 Monitoreo y Control", progress: 60 },
-    { level: 1, name: "1.5 Cierre", progress: 0 }
-  ];
-
-  wbsContainer.innerHTML = wbsData.map(item => `
-    <div class="wbs-item" style="margin-left: ${item.level * 30}px;">
-      <span class="wbs-name">${item.name}</span>
-      <div class="wbs-progress">
-        <div class="wbs-progress-bar">
-          <div class="wbs-progress-fill" style="width: ${item.progress}%"></div>
-        </div>
-        <span class="wbs-percent">${item.progress}%</span>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderGanttChart() {
-  const ganttContainer = document.getElementById('gantt-chart');
-  
-  const tasks = [
-    { name: "Análisis de Requisitos", start: 0, duration: 15, critical: false },
-    { name: "Diseño de Arquitectura", start: 15, duration: 20, critical: true },
-    { name: "Desarrollo Backend", start: 35, duration: 60, critical: true },
-    { name: "Desarrollo Frontend", start: 35, duration: 50, critical: false },
-    { name: "Integración IA", start: 95, duration: 40, critical: true },
-    { name: "Testing y QA", start: 135, duration: 30, critical: true },
-    { name: "Capacitación", start: 150, duration: 20, critical: false },
-    { name: "Despliegue", start: 165, duration: 10, critical: true }
-  ];
-
-  ganttContainer.innerHTML = tasks.map(task => `
-    <div class="gantt-row">
-      <div class="gantt-task-name">${task.name}</div>
-      <div class="gantt-timeline">
-        <div class="gantt-bar ${task.critical ? 'critical' : ''}" 
-             style="left: ${(task.start / 180) * 100}%; width: ${(task.duration / 180) * 100}%;">
-          ${task.duration}d
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderIntegrationMatrix() {
-  const container = document.getElementById('integration-matrix');
-  
-  const itilProcesses = [
-    "Incident Management",
-    "Problem Management",
-    "Change Management",
-    "Release Management"
-  ];
-
-  const pmbokAreas = [
-    "Alcance", "Cronograma", "Costos", "Calidad", "Riesgos"
-  ];
-
-  // Matriz de integración (strong, medium, weak, none)
-  const matrix = [
-    ["medium", "strong", "weak", "medium", "strong"],    // Incident
-    ["strong", "strong", "medium", "strong", "strong"],  // Problem
-    ["strong", "strong", "strong", "medium", "strong"],  // Change
-    ["strong", "strong", "medium", "strong", "medium"]   // Release
-  ];
-
-  let html = '<table class="integration-table"><thead><tr><th>ITIL \\ PMBOK</th>';
-  pmbokAreas.forEach(area => {
-    html += `<th>${area}</th>`;
-  });
-  html += '</tr></thead><tbody>';
-
-  itilProcesses.forEach((process, i) => {
-    html += `<tr><th>${process}</th>`;
-    matrix[i].forEach(level => {
-      html += `<td><div class="integration-cell ${level}" title="${level}"></div></td>`;
-    });
-    html += '</tr>';
-  });
-
-  html += '</tbody></table>';
-  container.innerHTML = html;
-}
-
-function renderKPIDashboard() {
-  const container = document.getElementById('kpi-dashboard');
-  
-  const kpis = [
-    {
-      name: "Incident Resolution Rate",
-      category: "ITIL",
-      value: "94.2%",
-      trend: "+2.1%",
-      positive: true,
-      target: "95%"
-    },
-    {
-      name: "MTTR (Mean Time To Repair)",
-      category: "ITIL",
-      value: "2.4h",
-      trend: "-15%",
-      positive: true,
-      target: "< 3h"
-    },
-    {
-      name: "CPI (Cost Performance Index)",
-      category: "PMBOK",
-      value: "1.08",
-      trend: "+0.03",
-      positive: true,
-      target: "> 1.0"
-    },
-    {
-      name: "SPI (Schedule Performance Index)",
-      category: "PMBOK",
-      value: "0.96",
-      trend: "-0.02",
-      positive: false,
-      target: "> 1.0"
-    },
-    {
-      name: "Change Success Rate",
-      category: "ITIL",
-      value: "98.5%",
-      trend: "+1.2%",
-      positive: true,
-      target: "> 95%"
-    },
-    {
-      name: "Risk Mitigation Rate",
-      category: "PMBOK",
-      value: "87%",
-      trend: "+5%",
-      positive: true,
-      target: "> 80%"
-    }
-  ];
-
-  container.innerHTML = kpis.map(kpi => `
-    <div class="kpi-card ${kpi.category.toLowerCase()}">
-      <div class="kpi-header">
-        <span class="kpi-name">${kpi.name}</span>
-        <span class="kpi-category ${kpi.category.toLowerCase()}-badge">${kpi.category}</span>
-      </div>
-      <div class="kpi-body">
-        <div class="kpi-value-large">${kpi.value}</div>
-        <div class="kpi-trend ${kpi.positive ? 'positive' : 'negative'}">
-          <i class="fas fa-arrow-${kpi.positive ? 'up' : 'down'}"></i>
-          <span>${kpi.trend} vs mes anterior</span>
-        </div>
-      </div>
-      <div class="kpi-footer">
-        <span>Target: ${kpi.target}</span>
-        <span>${kpi.positive ? '✓ On Track' : '⚠ At Risk'}</span>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderReleasesTimeline() {
-  const container = document.getElementById('releases-timeline');
-
-  const releases = [
-    {
-      version: "v1.0 - MVP",
-      date: "15 Marzo 2025",
-      status: "Completado",
-      description: "Lanzamiento del producto mínimo viable con funcionalidades core de diagnóstico asistido por IA"
-    },
-    {
-      version: "v1.5 - Módulo IA Avanzado",
-      date: "20 Junio 2025",
-      status: "Completado",
-      description: "Integración del motor de inteligencia artificial para predicción de fallos y diagnóstico automático"
-    },
-    {
-      version: "v2.0 - Integración Total",
-      date: "15 Septiembre 2025",
-      status: "En Progreso",
-      description: "Integración completa con sistemas hospitalarios existentes (HIS, RIS, PACS) y cumplimiento normativo"
-    },
-    {
-      version: "v2.5 - Mobile & Cloud",
-      date: "30 Noviembre 2025",
-      status: "Planificado",
-      description: "Aplicación móvil para médicos y pacientes + migración completa a arquitectura cloud-native"
-    },
-    {
-      version: "v3.0 - IA Predictiva",
-      date: "28 Febrero 2026",
-      status: "Planificado",
-      description: "Implementación de modelos predictivos para mantenimiento proactivo y optimización de recursos"
-    }
-  ];
-
-  container.innerHTML = `
-    <div class="timeline-line"></div>
-    ${releases.map((release, index) => `
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
-          <h4 class="timeline-title">${release.version}</h4>
-          <p class="timeline-date"><i class="fas fa-calendar-alt"></i> ${release.date}</p>
-          <p class="timeline-desc">${release.description}</p>
-          <span class="status-badge status-${release.status.toLowerCase().replace(/ /g, '-')}">${release.status}</span>
-        </div>
-      </div>
-    `).join('')}
-  `;
-}
-
-// ==================== LIVE FEED & NOTIFICATIONS ====================
-function addToLiveFeed(message, isAlert = false) {
-  const feed = document.getElementById('live-feed');
-  const timestamp = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-  const item = document.createElement('div');
-  item.className = `feed-item ${isAlert ? 'alert' : ''}`;
-  item.innerHTML = `
-    <div class="feed-icon">${isAlert ? '⚠️' : 'ℹ️'}</div>
-    <div class="feed-content">
-      <div class="feed-message">${message}</div>
-      <div class="feed-time">${timestamp}</div>
-    </div>
-  `;
-
-  feed.prepend(item);
-
-  // Mantener solo los últimos 15 mensajes
-  if (feed.children.length > 15) {
-    feed.removeChild(feed.lastChild);
-  }
-}
-
-function showNotification(message) {
-  STATE.notificationCount++;
-  document.getElementById('notification-dot').style.display = 'block';
-  document.getElementById('notification-btn').title = `${STATE.notificationCount} notificaciones nuevas`;
-
-  // Aquí podrías integrar un toast real (Toastify, SweetAlert2, etc.)
-  console.log('🔔 Notificación:', message);
-}
-
-function playAlert() {
-  const audio = document.getElementById('alert-sound');
-  audio.currentTime = 0;
-  audio.play().catch(() => {});
-}
-
-// ==================== MODALES ====================
-function showIncidentDetail(incidentId) {
-  const incident = STATE.incidents.find(i => i.id === incidentId);
-  if (!incident) return;
-
-  const modalBody = document.getElementById('modal-incident-body');
-  modalBody.innerHTML = `
-    <div class="incident-detail">
-      <h3>${incident.title}</h3>
-      <div class="detail-grid">
-        <div><strong>ID:</strong> ${incident.id}</div>
-        <div><strong>Fecha:</strong> ${incident.date} ${incident.time}</div>
-        <div><strong>Categoría:</strong> ${incident.category}</div>
-        <div><strong>Prioridad:</strong> <span class="priority-badge priority-${incident.priority.toLowerCase()}">${incident.priority}</span></div>
-        <div><strong>Impacto:</strong> ${incident.impact}</div>
-        <div><strong>Urgencia:</strong> ${incident.urgency}</div>
-        <div><strong>Estado:</strong> <span class="status-badge status-${incident.status.toLowerCase().replace(/ /g, '-')}">${incident.status}</span></div>
-        <div><strong>Grupo Asignado:</strong> ${incident.assignedGroup}</div>
-        <div><strong>SLA:</strong> <span style="color: ${incident.sla ? '#10b981' : '#ef4444'};">${incident.sla ? 'Cumplido ✓' : 'Incumplido ✗'}</span></div>
-        <div><strong>MTTR:</strong> ${incident.mttr}h</div>
-      </div>
-      <div class="detail-section">
-        <h4>Descripción</h4>
-        <p>${incident.description}</p>
-      </div>
-      ${incident.resolution ? `<div class="detail-section"><h4>Resolución</h4><p>${incident.resolution}</p></div>` : ''}
-    </div>
-  `;
-
-  document.getElementById('modal-incident').classList.add('active');
-}
-
-// ==================== NAVEGACIÓN Y EVENTOS ====================
-function setupNavigation() {
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
-      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-
-      const view = item.getAttribute('data-view');
-      document.querySelectorAll('.view-section').forEach(section => {
-        section.classList.remove('active');
-      });
-      document.getElementById(view).classList.add('active');
-      document.getElementById('page-title').textContent = item.querySelector('span').textContent.trim();
-    });
-  });
-}
-
-function setupEventListeners() {
-  // Nueva incidencia
-  document.getElementById('btn-new-incident')?.addEventListener('click', () => {
-    document.getElementById('modal-new-incident').classList.add('active');
-  });
-
-  document.getElementById('btn-submit-incident')?.addEventListener('click', () => {
-    const title = document.getElementById('incident-title').value.trim();
-    if (!title) return alert('El título es obligatorio');
-
-    const impact = document.getElementById('incident-impact').value;
-    const urgency = document.getElementById('incident-urgency').value;
-    const priority = calculatePriority(impact, urgency);
-
-    generateAutoIncident();
-    document.getElementById('modal-new-incident').classList.remove('active');
-    document.getElementById('form-new-incident').reset();
-    updateDashboard();
-    renderIncidentsTable();
-  });
-
-  // Cerrar modales
-  document.querySelectorAll('.modal-close, .modal').forEach(el => {
-    el.addEventListener('click', (e) => {
-      if (e.target === el || el.classList.contains('modal-close')) {
-        el.closest('.modal').classList.remove('active');
-      }
-    });
-  });
-
-  // Cerrar modal con Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
-    }
-  });
-}
-
-// ==================== AUTO-UPDATES ====================
-function startAutoUpdates() {
-  // Generar incidencias automáticas cada cierto tiempo
-  setInterval(() => {
-    if (Math.random() < 0.35) { // ~35% probabilidad cada 15 segundos
-      generateAutoIncident();
-      updateDashboard();
-      renderIncidentsTable();
-      createAllCharts();
-    }
-  }, 15000);
-
-  // Actualizar reloj en vivo
-  setInterval(() => {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-    // Podrías añadir un elemento de reloj si lo deseas
-  }, 1000);
-}
-
-// ==================== INICIO ====================
-console.log('%c🚀 NEXUS Pro - Sistema Integrado ITIL v4 + PMBOK 7', 'color: #0066cc; font-size: 16px; font-weight: bold;');
-console.log('%cSistema cargado correctamente', 'color: #28a745; font-size: 14px;');
+// ============ LOGS ============
+console.log('%c🌌 EVOXIA ∞ Sistema Completamente Activo', 'color: #00d4ff; font-size: 20px; font-weight: bold;');
+console.log('%c∞ Un sistema vivo que late con los datos', 'color: #ff00ea; font-style: italic;');
+console.log('%cTodos los botones y funciones están operativos', 'color: #00ff88;');
+console.log('%c📊 Nuevos gráficos: Tendencia de Rendimiento y Comparativa de Fases', 'color: #ffd700;');
+console.log('%c📋 Tabla mejorada con: Desv. Est., Fase Dominante, Estado y Temperatura', 'color: #ff69b4;');
